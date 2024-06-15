@@ -1,5 +1,5 @@
 {
-	"name": "flamework-game",
+	"name": "flamework-playground",
 	"globIgnorePaths": [
 		"**/package.json",
 		"**/tsconfig.json"
