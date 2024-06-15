@@ -8,6 +8,7 @@ export class TechTree {
 		for (const techType of Object.values(TechType)) {
 			this.techs.set(techType, new Tech(techType));
 		}
+		this.techs.get(TechType.WALLS)!.prerequisites.add(this.techs.get(TechType.CLAIM_DOOR)!);
 	}
 
 	public unlock(techType: TechType): boolean {

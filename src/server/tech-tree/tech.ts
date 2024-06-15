@@ -1,15 +1,17 @@
-import Object from "@rbxts/object-utils";
+import { keyFromValue } from "shared/key-from-value";
 
 export enum TechType {
 	CLAIM_DOOR,
+	WALLS,
 }
 
 export class Tech {
 	private _isUnlocked = false;
-	private prerequisites = new Array<Tech>();
+	public readonly prerequisites = new Set<Tech>();
 
-	constructor(private techType: TechType, isUnlocked = false, prerequisites = new Array<Tech>()) {
+	constructor(private techType: TechType, isUnlocked = false, prerequisites = new Set<Tech>()) {
 		this._isUnlocked = isUnlocked;
+		this.prerequisites = prerequisites;
 	}
 
 	public isUnlocked(): boolean {
@@ -21,7 +23,7 @@ export class Tech {
 		for (const tech of this.prerequisites) {
 			if (!tech.isUnlocked()) return false;
 		}
-		print(`unlocked ${Object.keys(TechType)[Object.values(TechType).indexOf(this.techType)]}`);
+		print(`unlocked ${keyFromValue(TechType, this.techType)}`);
 		this._isUnlocked = true;
 		return true;
 	}

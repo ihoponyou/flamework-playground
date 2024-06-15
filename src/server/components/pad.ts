@@ -5,13 +5,16 @@ import { PlayerServer } from "./player-server";
 import { keyFromValue } from "shared/key-from-value";
 import { TechType } from "server/tech-tree/tech";
 import { Asset } from "./asset";
-import { Plot, PlotChild } from "./plot";
+import { Plot } from "./plot";
+import { ModelServer } from "./model";
 
 interface PadAttributes {
 	assetId: number;
 }
 
-type PadInstance = BasePart & PlotChild;
+type PadInstance = Model & {
+	Part: Part & { BillboardGui: BillboardGui };
+};
 
 @Component({
 	tag: "Pad",
@@ -23,26 +26,50 @@ export class Pad extends BaseComponent<PadAttributes, PadInstance> implements On
 	private components = Dependency<Components>();
 	private plot!: Plot;
 	private asset?: Asset;
+	private touchedConnection?: RBXScriptConnection;
+
+	constructor(public readonly model: ModelServer) {
+		super();
+	}
 
 	public onStart(): void {
-		const plot = this.components.getComponent<Plot>(this.instance.Parent);
+		const parent = this.instance.Parent;
+		if (!parent) error("pad is not parented to a Plot");
+		const plot = this.components.getComponent<Plot>(parent);
 		if (!plot) error("parent is not a Plot or is missing Plot component");
 		this.plot = plot;
 
-		if (!keyFromValue(TechType, this.attributes.assetId)) {
-			warn(`${this.instance} assigned to buy asset ${this.attributes.assetId} which does not exist`);
+		this.touchedConnection = this.instance.Part.Touched.Connect((part) => this.onTouched(part));
+	}
+
+	private onTouched(otherPart: BasePart): void {
+		const parent = otherPart.Parent;
+		if (!parent) return;
+		const player = Players.GetPlayerFromCharacter(parent);
+		if (!player) return;
+
+		if (!this.asset) {
+			error("where the asset at");
 		}
 
-		this.instance.Touched.Connect((part) => {
-			const parent = part.Parent;
-			if (!parent) return;
-			const player = Players.GetPlayerFromCharacter(parent);
-			if (!player) return;
-			const playerComponent = this.components.getComponent<PlayerServer>(player);
-			if (!playerComponent?.unlockTech(this.attributes.assetId)) return;
+		this.asset.buy();
 
-			this.instance.CanCollide = false;
-			this.instance.Transparency = 1;
-		});
+		this.model.hide();
+
+		this.touchedConnection?.Disconnect();
+	}
+
+	public setAsset(asset: Asset): void {
+		this.asset = asset;
+	}
+
+	public hide(): void {
+		this.model.hide();
+		this.instance.Part.BillboardGui.Enabled = false;
+	}
+
+	public show(): void {
+		this.model.show();
+		this.instance.Part.BillboardGui.Enabled = true;
 	}
 }
