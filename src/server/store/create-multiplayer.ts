@@ -14,20 +14,21 @@ type ReplaceStateParameters<State, Actions> = {
 export function createMutiplayer<
 	P extends Producer,
 	S = InferState<P>,
-	A = ReplaceStateParameters<Map<Player, S>, InferActions<P>>,
->(producer: P): Producer<Map<Player, S>, A> {
+	A = ReplaceStateParameters<Map<string, S>, InferActions<P>>,
+>(producer: P): Producer<Map<string, S>, A> {
 	const actions = Object.map(
 		producer.getActions() as Record<string, (state: S, ...args: unknown[]) => S>,
 		(action) => {
-			return (combinedState: Map<Player, S>, player: Player, ...args: unknown[]) => {
+			return (combinedState: Map<string, S>, player: Player, ...args: unknown[]) => {
 				const nextState = table.clone(combinedState);
 
-				if (!nextState.has(player)) {
-					nextState.set(player, producer.getState());
+				const id = tostring(player.UserId);
+				if (!nextState.has(id)) {
+					nextState.set(id, producer.getState());
 				}
 
-				const producerState = nextState.get(player)!;
-				nextState.set(player, action(producerState, ...args));
+				const producerState = nextState.get(id)!;
+				nextState.set(id, action(producerState, ...args));
 
 				return nextState;
 			};
