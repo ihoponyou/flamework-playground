@@ -1,5 +1,5 @@
 import { Controller, OnStart } from "@flamework/core";
-import { producer } from "client/producer";
+import { producer } from "client/store";
 
 @Controller()
 export class TestController implements OnStart {

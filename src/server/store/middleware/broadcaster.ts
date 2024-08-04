@@ -1,4 +1,4 @@
-import { ProducerMiddleware, createBroadcaster } from "@rbxts/reflex";
+import { createBroadcaster, ProducerMiddleware } from "@rbxts/reflex";
 import { Events } from "server/network";
 import { slices } from "shared/store";
 
@@ -16,7 +16,6 @@ export function broadcasterMiddleware(): ProducerMiddleware {
 	});
 
 	Events.reflex.start.connect((player) => {
-		print("started server");
 		broadcaster.start(player);
 	});
 
