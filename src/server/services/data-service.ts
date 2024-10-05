@@ -4,7 +4,7 @@ import { Profile } from "@rbxts/profileservice/globals";
 import { Players, RunService } from "@rbxts/services";
 import { producer } from "server/store";
 import { selectPlayer } from "server/store/selectors";
-import { DEFAULT_PLAYER_DATA, PlayerData, SharedState } from "shared/store";
+import { DEFAULT_PLAYER_DATA, SharedState } from "shared/store";
 
 const PROFILE_STORE_INDEX = RunService.IsStudio() ? "Testing" : "Production";
 const PROFILE_KEY_TEMPLATE = "Player%d";
@@ -17,7 +17,7 @@ export class DataService implements OnStart {
 	private profiles = new Map<number, PlayerProfile>();
 	private profileStore = GetProfileStore(PROFILE_STORE_INDEX, DEFAULT_PLAYER_DATA);
 	private joinTicks = new Map<Player, number>();
-	private preReleaseListeners = new Map<Player, Array<(profile: Profile<PlayerData>) => void>>();
+	private preReleaseListeners = new Map<Player, Array<(profile: PlayerProfile) => void>>();
 
 	onStart(): void {
 		Players.PlayerAdded.Connect((player) => this.onPlayerAdded(player));
@@ -39,7 +39,7 @@ export class DataService implements OnStart {
 		profile.Release();
 	}
 
-	public connectToPreRelease(player: Player, listener: (profile: Profile<PlayerData>) => void): () => void {
+	public connectToPreRelease(player: Player, listener: (profile: PlayerProfile) => void): () => void {
 		const listeners = this.preReleaseListeners.get(player);
 		if (listeners === undefined) error(`no listener arr found for ${player}`);
 		listeners.push(listener);
@@ -78,11 +78,13 @@ export class DataService implements OnStart {
 		this.preReleaseListeners.set(player, []);
 
 		print("loading data...");
-		producer.loadPlayerData(player, profile.Data); //.forEach((value, key) => print(key, value.currencies));
+		producer.loadPlayerData(player, profile.Data);
 		this.giveLeaderStatsFolder(player);
 
 		const unsubscribe = producer.subscribe(selectPlayer(player), (data) => {
-			if (data) profile.Data = data;
+			if (data !== undefined) {
+				profile.Data = data;
+			}
 		});
 
 		Players.PlayerRemoving.Connect((removingPlayer) => {

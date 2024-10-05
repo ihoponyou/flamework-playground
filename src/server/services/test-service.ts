@@ -9,16 +9,9 @@ export class TestService implements OnStart {
 			while (task.wait(3) !== undefined) {
 				for (const player of Players.GetPlayers()) {
 					producer.addCurrency(player, "Silver", math.random(100));
+					producer.addItem(player, "goblet", 1);
 				}
 			}
 		})();
-
-		// Players.PlayerAdded.Connect((player) => {
-		// 	task.wait(5);
-		// 	producer.subscribe(selectPlayer(player), (newState) => {
-		// 		print(player);
-		// 		print(newState);
-		// 	});
-		// });
 	}
 }

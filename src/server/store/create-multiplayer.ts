@@ -1,6 +1,7 @@
 import type { InferActions, InferState, Producer } from "@rbxts/reflex";
 import { createProducer } from "@rbxts/reflex";
 import { Dictionary as Object } from "@rbxts/sift";
+import { DATABASE_ACTIONS } from "shared/store";
 
 // credit to sasial
 
@@ -18,7 +19,8 @@ export function createMutiplayer<
 >(producer: P): Producer<Map<string, S>, A> {
 	const actions = Object.map(
 		producer.getActions() as Record<string, (state: S, ...args: unknown[]) => S>,
-		(action) => {
+		(action, key) => {
+			if (!DATABASE_ACTIONS.has(key)) return action;
 			return (combinedState: Map<string, S>, player: Player, ...args: unknown[]) => {
 				const nextState = table.clone(combinedState);
 

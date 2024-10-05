@@ -1,10 +1,10 @@
 import { combineProducers, InferState } from "@rbxts/reflex";
-import { slices } from "shared/store";
+import { SHARED_SLICES } from "shared/store";
 import { createMutiplayer } from "./create-multiplayer";
 import { broadcasterMiddleware } from "./middleware/broadcaster";
 
 export const producer = combineProducers({
-	...slices,
+	...SHARED_SLICES,
 })
 	.enhance(createMutiplayer)
 	.applyMiddleware(broadcasterMiddleware());
