@@ -1,8 +1,20 @@
 import { Networking } from "@flamework/networking";
+import { BroadcastAction } from "@rbxts/reflex";
+import { SharedState } from "./store";
 
-interface ClientToServerEvents {}
+interface ClientToServerEvents {
+	reflex: {
+		start(): void;
+	};
+}
 
-interface ServerToClientEvents {}
+interface ServerToClientEvents {
+	reflex: {
+		dispatch(actions: Array<BroadcastAction>): void;
+		hydrate(state: SharedState): void;
+		start(): void;
+	};
+}
 
 interface ClientToServerFunctions {}
 
