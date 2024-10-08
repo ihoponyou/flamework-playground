@@ -6,6 +6,7 @@ interface ClientToServerEvents {
 	reflex: {
 		start(): void;
 	};
+	equip(equippable: Instance, shouldEquip: boolean): void;
 }
 
 interface ServerToClientEvents {

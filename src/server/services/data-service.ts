@@ -84,6 +84,7 @@ export class DataService implements OnStart {
 		this.profiles.set(player, profile);
 		this.preReleaseListeners.set(player, []);
 		store.loadPlayerData(player, profile.Data);
+		print("profile items:", profile.Data.inventory.items);
 
 		const unsubscribe = store.subscribe(selectPlayerData(player), (data) => {
 			if (data) profile.Data = data;

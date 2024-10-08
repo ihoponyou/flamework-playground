@@ -23,6 +23,7 @@ export function addMultiplayer<
 			return (stateMap: Map<string, S>, player: Player, ...args: unknown[]) => {
 				const id = tostring(player.UserId);
 				// the producer's state will always be empty? idk
+				print(stateMap.get(id));
 				const currentState: S = stateMap.get(id) ?? (producer.getState() as S);
 				const nextState = table.clone(stateMap);
 				nextState.set(id, action(currentState, ...args));
