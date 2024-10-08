@@ -10,14 +10,15 @@ import { DEFAULT_PLAYER_PROFILE_DATA, PlayerProfileData } from "shared/store/pla
 
 const PROFILE_STORE_INDEX = RunService.IsStudio() ? "Testing" : "Production";
 const PROFILE_KEY_TEMPLATE = "Player%d";
-const WIPE_DATA_ON_JOIN = true;
+const WIPE_DATA_ON_JOIN = false;
+if (WIPE_DATA_ON_JOIN) warn("PROFILES ARE WIPED ON JOIN");
 
 type PlayerProfile = Profile<PlayerProfileData>;
 
 @Service()
 export class DataService implements OnStart {
-	private profiles = new Map<number, PlayerProfile>();
 	private profileStore = GetProfileStore(PROFILE_STORE_INDEX, DEFAULT_PLAYER_PROFILE_DATA);
+	private profiles = new Map<Player, PlayerProfile>();
 	private preReleaseListeners = new Map<Player, Array<(profile: PlayerProfile) => void>>();
 
 	constructor(private components: Components) {}
@@ -30,14 +31,13 @@ export class DataService implements OnStart {
 	private onPlayerAdded(player: Player): void {
 		this.setupProfile(player);
 		this.components.waitForComponent<PlayerServer>(player).andThen((playerServer) => {
-			print("load character");
 			playerServer.instance.LoadCharacter();
 			// playerServer.loadCharacter();
 		});
 	}
 
 	private onPlayerRemoving(player: Player): void {
-		const profile = this.profiles.get(player.UserId);
+		const profile = this.profiles.get(player);
 		if (profile === undefined) return;
 		const listeners = this.preReleaseListeners.get(player);
 		listeners?.forEach((listener) => listener(profile));
@@ -55,7 +55,7 @@ export class DataService implements OnStart {
 	}
 
 	public getProfile(player: Player): PlayerProfile {
-		const profile = this.profiles.get(player.UserId);
+		const profile = this.profiles.get(player);
 		if (profile === undefined) error(`could not fetch profile for ${player.Name}`);
 		return profile;
 	}
@@ -75,13 +75,13 @@ export class DataService implements OnStart {
 		profile.Reconcile();
 
 		const onRelease = profile.ListenToRelease(() => {
-			this.profiles.delete(player.UserId);
+			this.profiles.delete(player);
 			this.preReleaseListeners.delete(player);
 			player.Kick("get released");
 			onRelease.Disconnect();
 		});
 
-		this.profiles.set(player.UserId, profile);
+		this.profiles.set(player, profile);
 		this.preReleaseListeners.set(player, []);
 		store.loadPlayerData(player, profile.Data);
 

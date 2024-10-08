@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable roblox-ts/no-any */
 import type { InferActions, InferState, Producer } from "@rbxts/reflex";
 import { createProducer } from "@rbxts/reflex";
@@ -6,7 +7,7 @@ import { Dictionary } from "@rbxts/sift";
 // credit to sasial
 
 type InsertPlayerParameter<State, Actions> = {
-	readonly [K in keyof Actions]: Actions[K] extends (state: State, ...args: infer Args) => State
+	readonly [K in keyof Actions]: Actions[K] extends (state: any, ...args: infer Args) => any
 		? (state: State, player: Player, ...args: Args) => State
 		: never;
 };
