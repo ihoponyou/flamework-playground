@@ -10,6 +10,7 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 
 	onStart(): void {
 		this.inventory.Parent = this.instance;
+		// store.subscribe(selectPlayerItems(this.instance), (state) => print(state));
 	}
 
 	private newInventory(): Folder {

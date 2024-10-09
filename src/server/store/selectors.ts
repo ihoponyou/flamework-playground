@@ -7,7 +7,11 @@ export function selectPlayer(player: Player) {
 }
 
 export function selectPlayerInventory(player: Player) {
-	return createSelector(selectPlayer(player), (state) => state);
+	return createSelector(selectPlayer(player), (state) => state?.inventory);
+}
+
+export function selectPlayerItems(player: Player) {
+	return createSelector(selectPlayerInventory(player), (inventory) => inventory?.items);
 }
 
 export function selectPlayerData(player: Player) {
