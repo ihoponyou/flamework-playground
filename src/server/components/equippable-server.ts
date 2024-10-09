@@ -1,11 +1,16 @@
 import { Component } from "@flamework/components";
+import Signal from "@rbxts/signal";
 import { AbstractEquippable } from "shared/components/abstract-equippable";
 import { Ownable } from "./ownable";
+
+type EquipChangedCallback = (isEquipped: boolean) => void;
 
 @Component({
 	tag: AbstractEquippable.TAG,
 })
 export class EquippableServer extends AbstractEquippable {
+	private equipChanged = new Signal<EquipChangedCallback>();
+
 	constructor(private ownable: Ownable) {
 		super();
 	}
@@ -24,5 +29,9 @@ export class EquippableServer extends AbstractEquippable {
 			return;
 		}
 		// ... do stuff
+	}
+
+	onEquipChanged(callback: EquipChangedCallback): RBXScriptConnection {
+		return this.equipChanged.Connect((isEquipped) => callback(isEquipped));
 	}
 }
