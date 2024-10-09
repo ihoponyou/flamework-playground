@@ -3,11 +3,11 @@ import { DEFAULT_PLAYER_PROFILE_DATA, PlayerProfileData } from "shared/store/pla
 import { RootServerState } from ".";
 
 export function selectPlayer(player: Player) {
-	return (state: RootServerState) => state.get(tostring(player.UserId));
+	return (state: RootServerState) => state.get(player);
 }
 
 export function selectPlayerInventory(player: Player) {
-	return createSelector(selectPlayer(player), (state) => state?.inventory);
+	return createSelector(selectPlayer(player), (state) => state);
 }
 
 export function selectPlayerData(player: Player) {

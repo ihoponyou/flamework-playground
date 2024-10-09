@@ -24,6 +24,9 @@ export class DataService implements OnStart {
 	constructor(private components: Components) {}
 
 	onStart(): void {
+		for (const player of Players.GetPlayers()) {
+			this.onPlayerAdded(player);
+		}
 		Players.PlayerAdded.Connect((player) => this.onPlayerAdded(player));
 		Players.PlayerRemoving.Connect((player) => this.onPlayerRemoving(player));
 	}
