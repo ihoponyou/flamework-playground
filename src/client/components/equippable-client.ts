@@ -6,10 +6,10 @@ import { AbstractEquippable } from "shared/components/abstract-equippable";
 	tag: AbstractEquippable.TAG,
 })
 export class EquippableClient extends AbstractEquippable {
-	equip(): void {
+	equipTo(): void {
 		Events.equip(this.instance, true);
 	}
-	unequip(): void {
+	unequipFrom(): void {
 		Events.equip(this.instance, false);
 	}
 }

@@ -1,4 +1,5 @@
 import { BaseComponent, Component } from "@flamework/components";
+import { CharacterServer } from "./character-server";
 
 @Component({
 	tag: Ownable.TAG,
@@ -6,21 +7,21 @@ import { BaseComponent, Component } from "@flamework/components";
 export class Ownable extends BaseComponent {
 	static readonly TAG = "Ownable";
 
-	private owner?: Player;
+	private owner?: CharacterServer;
 
-	public getOwner(): Player | undefined {
+	public getOwner(): CharacterServer | undefined {
 		return this.owner;
 	}
 
-	public setOwner(owner: Player): void {
-		this.owner = owner;
+	public setOwner(character: CharacterServer): void {
+		this.owner = character;
 	}
 
 	public hasOwner(): boolean {
 		return this.owner !== undefined;
 	}
 
-	public isOwnedBy(player: Player): boolean {
-		return this.owner === player;
+	public isOwnedBy(character: CharacterServer): boolean {
+		return this.owner === character;
 	}
 }

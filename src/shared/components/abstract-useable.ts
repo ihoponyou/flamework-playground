@@ -1,7 +1,8 @@
 import { BaseComponent, Component } from "@flamework/components";
+import { AbstractCharacter } from "./abstract-character";
 
 @Component()
 export abstract class AbstractUseable extends BaseComponent {
 	static readonly TAG = "Useable";
-	abstract use(player: Player): void;
+	abstract use(character: AbstractCharacter): void;
 }

@@ -1,9 +1,10 @@
 import { Component } from "@flamework/components";
 import Signal from "@rbxts/signal";
 import { AbstractEquippable } from "shared/components/abstract-equippable";
+import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 
-type EquipChangedCallback = (isEquipped: boolean) => void;
+type EquipChangedCallback = (isEquipped: boolean, character: CharacterServer) => void;
 
 @Component({
 	tag: AbstractEquippable.TAG,
@@ -15,23 +16,33 @@ export class EquippableServer extends AbstractEquippable {
 		super();
 	}
 
-	equip(player: Player): void {
-		if (!this.ownable.isOwnedBy(player)) {
-			warn(`${player} tried to equip ${this.instance.GetFullName()} but does not own`);
-			return;
-		}
-		// ... do stuff
+	equipTo(character: CharacterServer): boolean {
+		if (!this.canBeEquippedBy(character)) return false;
+		this.setIsEquipped(character, true);
+		return true;
 	}
 
-	unequip(player: Player): void {
-		if (!this.ownable.isOwnedBy(player)) {
-			warn(`${player} tried to unequip ${this.instance.GetFullName()} but does not own`);
-			return;
-		}
-		// ... do stuff
+	unequipFrom(character: CharacterServer): boolean {
+		this.setIsEquipped(character, false);
+		return true;
 	}
 
 	onEquipChanged(callback: EquipChangedCallback): RBXScriptConnection {
-		return this.equipChanged.Connect((isEquipped) => callback(isEquipped));
+		return this.equipChanged.Connect((isEquipped, characterWhoEquipped) =>
+			callback(isEquipped, characterWhoEquipped),
+		);
+	}
+
+	private setIsEquipped(character: CharacterServer, equipping: boolean): void {
+		if (!this.ownable.isOwnedBy(character)) {
+			warn(
+				`${character} tried to ${
+					equipping ? "equip" : "unequip"
+				} ${this.instance.GetFullName()} but does not own`,
+			);
+			return;
+		}
+		this._isEquipped = equipping;
+		this.equipChanged.Fire(equipping, character);
 	}
 }

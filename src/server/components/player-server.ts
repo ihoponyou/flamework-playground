@@ -1,23 +1,36 @@
-import { Component } from "@flamework/components";
+import { Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { store } from "server/store";
 import { selectPlayerItems } from "server/store/selectors";
 import { AbstractPlayer } from "shared/components/abstract-player";
+import { Item } from "shared/configs/items";
+import { CharacterServer } from "./character-server";
 
 @Component({
-	tag: "Player",
+	tag: AbstractPlayer.TAG,
 })
 export class PlayerServer extends AbstractPlayer implements OnStart {
-	protected inventory: Folder = this.newInventory();
+	private character?: CharacterServer;
 
-	onStart(): void {
-		this.inventory.Parent = this.instance;
-		store.subscribe(selectPlayerItems(this.instance), (state) => print(state));
+	constructor(private components: Components) {
+		super();
 	}
 
-	private newInventory(): Folder {
-		const inventory = new Instance("Folder");
-		inventory.Name = "Inventory";
-		return inventory;
+	onStart(): void {
+		store.subscribe(selectPlayerItems(this.instance), (state) => print(state));
+		const character = this.instance.Character;
+		if (character !== undefined) {
+			this.updateCharacter(character);
+		}
+		this.instance.CharacterAdded.Connect((character) => this.updateCharacter(character));
+	}
+
+	private updateCharacter(newCharacterInstance: Model): void {
+		newCharacterInstance.AddTag(CharacterServer.TAG);
+		this.character = this.components.waitForComponent<CharacterServer>(newCharacterInstance).expect();
+	}
+
+	private updateInventory(newItems: ReadonlyMap<Item, number>) {
+		// TODO: iterate over new inventory; give the character items to use
 	}
 }
