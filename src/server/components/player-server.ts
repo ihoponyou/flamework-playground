@@ -7,6 +7,10 @@ import { ItemId } from "shared/configs/items";
 import { CharacterServer } from "./character-server";
 import { Item } from "./item-server";
 
+function playerHasInventory(inventory: ReadonlyMap<ItemId, number> | undefined) {
+	return inventory !== undefined;
+}
+
 @Component({
 	tag: AbstractPlayer.TAG,
 })
@@ -26,7 +30,7 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 		}
 		this.instance.CharacterAdded.Connect((character) => this.updateCharacter(character));
 
-		// use an observer?
+		// use an observer? cannot since player state may be undefined
 		this.unsubscribeFromInventory = store.subscribe(selectPlayerItems(this.instance), (state) => {
 			if (state === undefined) return;
 			this.updateInventory(state);
@@ -45,7 +49,6 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 	}
 
 	private updateInventory(newItems: ReadonlyMap<ItemId, number>) {
-		// TODO: iterate over new inventory; give the character items to use
 		if (this.character === undefined) {
 			warn(this.UNDEFINED_CHARACTER_MESSAGE);
 			return;

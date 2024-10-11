@@ -1,6 +1,6 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency } from "@flamework/core";
-import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
+import { ServerStorage } from "@rbxts/services";
 import { WorldModel } from "shared/components/world-model";
 import { EquippableServer } from "./equippable-server";
 import { Ownable } from "./ownable";
@@ -23,6 +23,7 @@ export class Item extends BaseComponent<ItemAttributes> {
 		newItem.Parent = parent ?? ServerStorage;
 
 		newItem.AddTag(Ownable.TAG);
+		newItem.AddTag(WorldModel.TAG);
 		newItem.AddTag(EquippableServer.TAG);
 		newItem.AddTag(Item.TAG);
 		newItem.Name = name;
@@ -35,22 +36,13 @@ export class Item extends BaseComponent<ItemAttributes> {
 			});
 	}
 
-	private worldModel!: WorldModel;
 	private propWeld = new Instance("Weld");
 
-	constructor(private components: Components, private equippable: EquippableServer) {
+	constructor(private components: Components, private equippable: EquippableServer, private worldModel: WorldModel) {
 		super();
 	}
 
 	onStart(): void {
-		const template = ReplicatedStorage.WorldModels.FindFirstChild(this.instance.Name);
-		if (template === undefined) {
-			error(`no model exists for "${this.instance.Name}"`);
-		}
-		const clone = template.Clone();
-		clone.AddTag(WorldModel.TAG);
-		this.worldModel = this.components.waitForComponent<WorldModel>(clone).expect();
-
 		this.propWeld.Parent = this.worldModel.instance;
 
 		this.equippable.onEquipChanged((isEquipped, equippedBy) => {
