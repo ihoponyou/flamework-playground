@@ -9,6 +9,11 @@ import { EquippableServer } from "./equippable-server";
 export class ItemServer extends BaseComponent {
 	static readonly TAG = "Item";
 
+	static addTags(instance: Instance): void {
+		instance.AddTag(EquippableServer.TAG);
+		instance.AddTag(ItemServer.TAG);
+	}
+
 	private worldModel!: WorldModel;
 	private propWeld = new Instance("Weld");
 

@@ -2,6 +2,7 @@ import { Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
 import { EquippableServer } from "./equippable-server";
+import { ItemServer } from "./item-server";
 
 @Component({
 	tag: AbstractCharacter.TAG,
@@ -38,6 +39,10 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 
 	getItem(itemName: string): Instance | undefined {
 		return this.inventory.FindFirstChild(itemName);
+	}
+
+	addToInventory(item: ItemServer): void {
+		item.instance.Parent = this.inventory;
 	}
 
 	private newInventory(): Folder {
