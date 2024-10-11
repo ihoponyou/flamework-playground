@@ -1,8 +1,8 @@
-import { Component } from "@flamework/components";
+import { Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
 import { EquippableServer } from "./equippable-server";
-import { ItemServer } from "./item-server";
+import { Item } from "./item-server";
 
 @Component({
 	tag: AbstractCharacter.TAG,
@@ -11,6 +11,10 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 	protected inventory = this.newInventory();
 
 	private equippedThing?: EquippableServer;
+
+	constructor(private components: Components) {
+		super();
+	}
 
 	onStart(): void {
 		this.inventory.Parent = this.instance;
@@ -37,11 +41,14 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		return this.getItem(itemName) !== undefined;
 	}
 
-	getItem(itemName: string): Instance | undefined {
-		return this.inventory.FindFirstChild(itemName);
+	getItem(itemName: string): Item | undefined {
+		const instance = this.inventory.FindFirstChild(itemName);
+		if (instance === undefined) return undefined;
+		const item = this.components.getComponent<Item>(instance);
+		return item;
 	}
 
-	addToInventory(item: ItemServer): void {
+	addToInventory(item: Item): void {
 		item.instance.Parent = this.inventory;
 	}
 

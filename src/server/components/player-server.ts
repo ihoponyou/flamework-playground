@@ -3,9 +3,9 @@ import { OnStart } from "@flamework/core";
 import { store } from "server/store";
 import { selectPlayerItems } from "server/store/selectors";
 import { AbstractPlayer } from "shared/components/abstract-player";
-import { Item } from "shared/configs/items";
+import { ItemId } from "shared/configs/items";
 import { CharacterServer } from "./character-server";
-import { ItemServer } from "./item-server";
+import { Item } from "./item-server";
 
 @Component({
 	tag: AbstractPlayer.TAG,
@@ -13,18 +13,28 @@ import { ItemServer } from "./item-server";
 export class PlayerServer extends AbstractPlayer implements OnStart {
 	private readonly UNDEFINED_CHARACTER_MESSAGE = `undefined character component PlayerServer@${this.instance}`;
 	private character?: CharacterServer;
+	private unsubscribeFromInventory?: () => void;
 
 	constructor(private components: Components) {
 		super();
 	}
 
 	onStart(): void {
-		store.subscribe(selectPlayerItems(this.instance), (state) => print(state));
 		const character = this.instance.Character;
 		if (character !== undefined) {
 			this.updateCharacter(character);
 		}
 		this.instance.CharacterAdded.Connect((character) => this.updateCharacter(character));
+
+		// use an observer?
+		this.unsubscribeFromInventory = store.subscribe(selectPlayerItems(this.instance), (state) => {
+			if (state === undefined) return;
+			this.updateInventory(state);
+		});
+	}
+
+	override destroy(): void {
+		if (this.unsubscribeFromInventory) this.unsubscribeFromInventory();
 	}
 
 	private updateCharacter(newCharacterInstance: Model): void {
@@ -34,22 +44,29 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 		if (inventory) this.updateInventory(inventory);
 	}
 
-	private updateInventory(newItems: ReadonlyMap<Item, number>) {
+	private updateInventory(newItems: ReadonlyMap<ItemId, number>) {
 		// TODO: iterate over new inventory; give the character items to use
 		if (this.character === undefined) {
 			warn(this.UNDEFINED_CHARACTER_MESSAGE);
 			return;
 		}
 		for (const [itemName, quantity] of newItems) {
-			if (this.character.hasItem(itemName)) continue;
-			const newItem = new Instance("Model");
-			ItemServer.addTags(newItem);
-			this.components.waitForComponent<ItemServer>(newItem).andThen((itemServer) => {
+			const existingItem = this.character.getItem(itemName);
+			if (existingItem) {
+				if (existingItem.attributes.quantity === quantity) {
+					continue;
+				} else {
+					existingItem.attributes.quantity = quantity;
+					break;
+				}
+			}
+
+			Item.createItem(quantity, itemName).andThen((item) => {
 				if (this.character === undefined) {
 					warn(this.UNDEFINED_CHARACTER_MESSAGE);
 					return;
 				}
-				this.character.addToInventory(itemServer);
+				this.character.addToInventory(item);
 			});
 		}
 	}

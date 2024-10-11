@@ -9,9 +9,9 @@ export function receiverMiddleware(): ProducerMiddleware {
 	});
 
 	Events.reflex.dispatch.connect((actions) => {
-		for (const action of actions) {
-			print(`${action.name}(`, action.arguments, ")");
-		}
+		// for (const action of actions) {
+		// 	print(`${action.name}(`, action.arguments, ")");
+		// }
 		receiver.dispatch(actions);
 	});
 

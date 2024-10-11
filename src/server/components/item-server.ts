@@ -1,17 +1,38 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
-import { ReplicatedStorage } from "@rbxts/services";
+import { Dependency } from "@flamework/core";
+import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
 import { WorldModel } from "shared/components/world-model";
 import { EquippableServer } from "./equippable-server";
+import { Ownable } from "./ownable";
+
+interface ItemAttributes {
+	quantity: number;
+}
 
 @Component({
-	tag: ItemServer.TAG,
+	tag: Item.TAG,
+	defaults: {
+		quantity: -1,
+	},
 })
-export class ItemServer extends BaseComponent {
+export class Item extends BaseComponent<ItemAttributes> {
 	static readonly TAG = "Item";
 
-	static addTags(instance: Instance): void {
-		instance.AddTag(EquippableServer.TAG);
-		instance.AddTag(ItemServer.TAG);
+	static async createItem(quantity: number, name: string, parent?: Instance): Promise<Item> {
+		const newItem = new Instance("Model");
+		newItem.Parent = parent ?? ServerStorage;
+
+		newItem.AddTag(Ownable.TAG);
+		newItem.AddTag(EquippableServer.TAG);
+		newItem.AddTag(Item.TAG);
+		newItem.Name = name;
+
+		return Dependency<Components>()
+			.waitForComponent<Item>(newItem)
+			.andThen((item) => {
+				item.attributes.quantity = quantity;
+				return item;
+			});
 	}
 
 	private worldModel!: WorldModel;

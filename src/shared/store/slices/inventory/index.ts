@@ -1,11 +1,11 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
-import { Item, ITEMS } from "shared/configs/items";
+import { ItemId, ITEMS } from "shared/configs/items";
 import { PlayerProfileData } from "shared/store/player-data";
 
 export interface InventoryState {
-	readonly items: ReadonlyMap<Item, number>;
-	readonly hotbar: ReadonlyMap<number, Item>;
+	readonly items: ReadonlyMap<ItemId, number>;
+	readonly hotbar: ReadonlyMap<number, ItemId>;
 }
 
 export const DEFAULT_INVENTORY_STATE: InventoryState = {
@@ -18,7 +18,7 @@ export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
 		return data.inventory;
 	},
 
-	addItem: (state, item: Item, quantity: number = 1) => {
+	addItem: (state, item: ItemId, quantity: number = 1) => {
 		const currentQuantity = state.items.get(item) ?? 0;
 		const maxQuantity = ITEMS[item].maxQuantity;
 		if (currentQuantity >= maxQuantity) {
@@ -31,7 +31,7 @@ export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
 		});
 	},
 
-	removeItem: (state, item: Item, quantity: number = 1) => {
+	removeItem: (state, item: ItemId, quantity: number = 1) => {
 		const currentQuantity = state.items.get(item) ?? 0;
 		if (currentQuantity === 0) {
 			warn(`tried to remove item "${item}", but quantity = 0 (current:${currentQuantity})`);

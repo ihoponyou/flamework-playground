@@ -1,17 +1,20 @@
 import { Controller, OnStart } from "@flamework/core";
-import { LOCAL_PLAYER } from "client/constants";
-import { store } from "client/store";
-import { selectItems } from "shared/store/slices/inventory/selectors";
+import { CharacterController } from "./character-controller";
 
 @Controller()
 export class InventoryController implements OnStart {
 	private inventory!: Folder;
 
+	constructor(private characterController: CharacterController) {}
+
 	onStart(): void {
-		this.inventory = LOCAL_PLAYER.WaitForChild("Inventory") as Folder;
-		print(this.inventory.GetFullName());
-		store.subscribe(selectItems(), (state) => {
-			print(state);
-		});
+		// this is garbage
+		let characterClient = this.characterController.getCharacter();
+		while (characterClient === undefined) {
+			task.wait();
+			characterClient = this.characterController.getCharacter();
+		}
+
+		this.inventory = characterClient.instance.WaitForChild("Inventory") as Folder;
 	}
 }
