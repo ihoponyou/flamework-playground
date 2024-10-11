@@ -1,7 +1,7 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
-import { Dependency } from "@flamework/core";
-import { ServerStorage } from "@rbxts/services";
-import { WorldModel } from "shared/components/world-model";
+import { Dependency, OnStart } from "@flamework/core";
+import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
+import { UsefulModel } from "shared/components/useful-model";
 import { EquippableServer } from "./equippable-server";
 import { Ownable } from "./ownable";
 
@@ -15,7 +15,7 @@ interface ItemAttributes {
 		quantity: -1,
 	},
 })
-export class Item extends BaseComponent<ItemAttributes> {
+export class Item extends BaseComponent<ItemAttributes> implements OnStart {
 	static readonly TAG = "Item";
 
 	static async createItem(quantity: number, name: string, parent?: Instance): Promise<Item> {
@@ -23,7 +23,6 @@ export class Item extends BaseComponent<ItemAttributes> {
 		newItem.Parent = parent ?? ServerStorage;
 
 		newItem.AddTag(Ownable.TAG);
-		newItem.AddTag(WorldModel.TAG);
 		newItem.AddTag(EquippableServer.TAG);
 		newItem.AddTag(Item.TAG);
 		newItem.Name = name;
@@ -36,14 +35,26 @@ export class Item extends BaseComponent<ItemAttributes> {
 			});
 	}
 
-	private propWeld = new Instance("Weld");
+	private bodyAttach = this.newBodyAttach();
+	private worldModel!: UsefulModel;
 
-	constructor(private components: Components, private equippable: EquippableServer, private worldModel: WorldModel) {
+	constructor(private components: Components, private equippable: EquippableServer) {
 		super();
 	}
 
 	onStart(): void {
-		this.propWeld.Parent = this.worldModel.instance;
+		const template = ReplicatedStorage.WorldModels.FindFirstChild(this.instance.Name);
+		if (template === undefined) {
+			error(`no world model exists for ${this.instance.Name}`);
+		}
+		const clone = template.Clone();
+		clone.Parent = this.instance;
+		clone.Name = `WorldModel(${this.instance.Name})`;
+		clone.AddTag(UsefulModel.TAG);
+		this.worldModel = this.components.waitForComponent<UsefulModel>(clone).expect();
+
+		this.bodyAttach.Parent = this.worldModel.instance;
+		this.bodyAttach.Part1 = this.worldModel.instance.PrimaryPart;
 
 		this.equippable.onEquipChanged((isEquipped, equippedBy) => {
 			if (isEquipped) {
@@ -59,9 +70,15 @@ export class Item extends BaseComponent<ItemAttributes> {
 	}
 
 	weldTo(part: BasePart, offset?: CFrame): void {
-		this.propWeld.Part0 = part;
+		this.bodyAttach.Part0 = part;
 		if (offset !== undefined) {
-			this.propWeld.C0 = offset;
+			this.bodyAttach.C0 = offset;
 		}
+	}
+
+	private newBodyAttach(): Weld {
+		const weld = new Instance("Weld");
+		weld.Name = "BodyAttach";
+		return weld;
 	}
 }

@@ -5,7 +5,7 @@ import { selectPlayerItems } from "server/store/selectors";
 import { AbstractPlayer } from "shared/components/abstract-player";
 import { ItemId } from "shared/configs/items";
 import { CharacterServer } from "./character-server";
-import { Item } from "./item-server";
+import { Item } from "./item";
 
 function playerHasInventory(inventory: ReadonlyMap<ItemId, number> | undefined) {
 	return inventory !== undefined;
@@ -56,14 +56,14 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 		for (const [itemName, quantity] of newItems) {
 			const existingItem = this.character.getItem(itemName);
 			if (existingItem) {
-				if (existingItem.attributes.quantity === quantity) {
-					continue;
-				} else {
+				print(`${this.instance} already has ${itemName}`);
+				if (existingItem.attributes.quantity !== quantity) {
 					existingItem.attributes.quantity = quantity;
-					break;
 				}
+				continue;
 			}
 
+			print(`creating ${itemName}`);
 			Item.createItem(quantity, itemName).andThen((item) => {
 				if (this.character === undefined) {
 					warn(this.UNDEFINED_CHARACTER_MESSAGE);
