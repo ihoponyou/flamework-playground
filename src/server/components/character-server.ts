@@ -1,7 +1,6 @@
 import { Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
-import { EquippableServer } from "./equippable-server";
 import { Item } from "./item";
 
 @Component({
@@ -10,7 +9,6 @@ import { Item } from "./item";
 export class CharacterServer extends AbstractCharacter implements OnStart {
 	protected inventory = this.newInventory();
 
-	private equippedThing?: EquippableServer;
 	private hiltJoint = this.newHiltJoint();
 	private hiltBone = this.newHiltBone();
 
@@ -28,23 +26,6 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		this.hiltJoint.Part1 = this.hiltBone;
 	}
 
-	equip(equippable: EquippableServer): boolean {
-		if (this.equippedThing !== undefined) {
-			if (!this.unequip(this.equippedThing)) {
-				return false;
-			}
-		}
-		equippable.equipTo(this);
-		this.equippedThing = equippable;
-		return true;
-	}
-
-	unequip(equippable: EquippableServer): boolean {
-		equippable.unequipFrom(this);
-		this.equippedThing = undefined;
-		return true;
-	}
-
 	hasItem(itemName: string): boolean {
 		return this.getItem(itemName) !== undefined;
 	}
@@ -58,6 +39,11 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 
 	addToInventory(item: Item): void {
 		item.instance.Parent = this.inventory;
+		item.equip(this);
+	}
+
+	getHiltBone(): Part {
+		return this.hiltBone;
 	}
 
 	private newInventory(): Folder {
@@ -69,6 +55,7 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 	private newHiltJoint(): Motor6D {
 		const joint = new Instance("Motor6D");
 		joint.Name = "HiltJoint";
+		joint.C0 = new CFrame(0, -1, 0);
 		return joint;
 	}
 
@@ -79,6 +66,7 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		bone.CanTouch = false;
 		bone.CanQuery = false;
 		bone.Massless = true;
+		bone.Transparency = 1;
 		return bone;
 	}
 }

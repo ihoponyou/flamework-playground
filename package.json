@@ -31,6 +31,7 @@
     "@rbxts/immut": "^0.4.4-ts.0",
     "@rbxts/object-utils": "^1.0.4",
     "@rbxts/profileservice": "^1.4.2",
+    "@rbxts/promise-character": "^1.0.3",
     "@rbxts/react": "^0.4.0",
     "@rbxts/reflex": "^4.3.1",
     "@rbxts/services": "^1.5.4",

@@ -1,8 +1,12 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { Dependency, OnStart } from "@flamework/core";
+import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
+import { ITEMS_SERVER } from "server/configs/items";
 import { UsefulModel } from "shared/components/useful-model";
-import { EquippableServer } from "./equippable-server";
+import { ItemId } from "shared/configs/items";
+import { Equippable } from "shared/equippable";
+import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 
 interface ItemAttributes {
@@ -15,7 +19,7 @@ interface ItemAttributes {
 		quantity: -1,
 	},
 })
-export class Item extends BaseComponent<ItemAttributes> implements OnStart {
+export class Item extends BaseComponent<ItemAttributes> implements OnStart, Equippable {
 	static readonly TAG = "Item";
 
 	static async createItem(quantity: number, name: string, parent?: Instance): Promise<Item> {
@@ -23,7 +27,6 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart {
 		newItem.Parent = parent ?? ServerStorage;
 
 		newItem.AddTag(Ownable.TAG);
-		newItem.AddTag(EquippableServer.TAG);
 		newItem.AddTag(Item.TAG);
 		newItem.Name = name;
 
@@ -35,14 +38,20 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart {
 			});
 	}
 
+	public readonly config = ITEMS_SERVER[this.instance.Name as ItemId];
+
 	private bodyAttach = this.newBodyAttach();
 	private worldModel!: UsefulModel;
 
-	constructor(private components: Components, private equippable: EquippableServer) {
+	constructor(private components: Components) {
 		super();
 	}
 
 	onStart(): void {
+		if (this.config === undefined) {
+			error(`item config not found for ${this.instance.Name}`);
+		}
+
 		const template = ReplicatedStorage.WorldModels.FindFirstChild(this.instance.Name);
 		if (template === undefined) {
 			error(`no world model exists for ${this.instance.Name}`);
@@ -55,21 +64,18 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart {
 
 		this.bodyAttach.Parent = this.worldModel.instance;
 		this.bodyAttach.Part1 = this.worldModel.instance.PrimaryPart;
-
-		this.equippable.onEquipChanged((isEquipped, equippedBy) => {
-			if (isEquipped) {
-				// weld to character HiltPart
-				// play idle animation
-				print(equippedBy, "equipped item");
-			} else {
-				// weld to character holster
-				// stop idle animation
-				print(equippedBy, "unequipped item");
-			}
-		});
 	}
 
-	weldTo(part: BasePart, offset?: CFrame): void {
+	equip(equipper: CharacterServer): void {
+		this.weldTo(equipper.getHiltBone(), CFrame.identity);
+	}
+
+	unequip(unequipper: CharacterServer): void {
+		const rig = promiseR6(unequipper.instance).expect();
+		this.weldTo(rig[this.config.holsterLimb], CFrame.identity);
+	}
+
+	private weldTo(part: BasePart, offset?: CFrame): void {
 		this.bodyAttach.Part0 = part;
 		if (offset !== undefined) {
 			this.bodyAttach.C0 = offset;

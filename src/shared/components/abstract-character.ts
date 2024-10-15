@@ -1,5 +1,4 @@
 import { BaseComponent, Component } from "@flamework/components";
-import { AbstractEquippable } from "./abstract-equippable";
 
 type CharacterInstance = Model;
 
@@ -12,7 +11,4 @@ export abstract class AbstractCharacter extends BaseComponent<{}, CharacterInsta
 	}
 
 	protected abstract inventory: Folder;
-
-	abstract equip(equippable: AbstractEquippable): void;
-	abstract unequip(equippable: AbstractEquippable): void;
 }
