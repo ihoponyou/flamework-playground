@@ -5,7 +5,7 @@ import { Profile } from "@rbxts/profileservice/globals";
 import { Players, RunService } from "@rbxts/services";
 import { PlayerServer } from "server/components/player-server";
 import { store } from "server/store";
-import { selectPlayerData } from "server/store/selectors";
+import { selectPlayer } from "server/store/selectors";
 import { DEFAULT_PLAYER_PROFILE_DATA, PlayerProfileData } from "shared/store/player-data";
 
 const PROFILE_STORE_INDEX = RunService.IsStudio() ? "Testing" : "Production";
@@ -88,8 +88,8 @@ export class DataService implements OnStart {
 		this.preReleaseListeners.set(player, []);
 		store.loadPlayerData(player, profile.Data);
 
-		const unsubscribe = store.subscribe(selectPlayerData(player), (data) => {
-			if (data) profile.Data = data;
+		const unsubscribe = store.subscribe(selectPlayer(player), (state) => {
+			if (state) profile.Data = state;
 		});
 
 		const stopSubscription = Players.PlayerRemoving.Connect((leavingPlayer) => {

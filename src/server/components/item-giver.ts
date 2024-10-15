@@ -16,5 +16,6 @@ export class ItemGiver extends BaseComponent<{}, BasePart> implements OnStart {
 
 	private onClick(playerWhoClicked: Player): void {
 		store.addItem(playerWhoClicked, ItemId.GOBLET, 2);
+		store.addToHotbar(playerWhoClicked, ItemId.GOBLET);
 	}
 }

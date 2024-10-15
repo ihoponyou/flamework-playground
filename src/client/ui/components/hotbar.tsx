@@ -3,7 +3,7 @@ import { useSelector } from "@rbxts/react-reflex";
 import { selectEquippables } from "client/store/slices/equippables/selectors";
 import { selectIsBackpackOpen } from "client/store/slices/ui/selectors";
 import { MAX_HOTBAR_SLOTS } from "shared/constants";
-import { selectHotbar } from "shared/store/slices/inventory/selectors";
+import { selectHotbar } from "shared/store/slices/hotbar/selectors";
 import { EmptySlot } from "./empty-slot";
 import { EquippableButton } from "./equippable-button";
 

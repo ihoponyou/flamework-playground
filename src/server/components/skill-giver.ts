@@ -16,5 +16,6 @@ export class SkillGiver extends BaseComponent<{}, BasePart> implements OnStart {
 
 	private onClick(playerWhoClicked: Player): void {
 		store.addSkill(playerWhoClicked, SkillId.GOBLET_THROW);
+		store.addToHotbar(playerWhoClicked, SkillId.GOBLET_THROW);
 	}
 }

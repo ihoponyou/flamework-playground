@@ -2,7 +2,7 @@ import { BaseComponent, Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { Players } from "@rbxts/services";
 import { store } from "server/store";
-import { selectPlayerItems, selectPlayerSkills } from "server/store/selectors";
+import { selectPlayerInventory, selectPlayerSkills } from "server/store/selectors";
 import { ItemId } from "shared/configs/items";
 import { SkillId } from "shared/skill-id";
 import { CharacterServer } from "./character-server";
@@ -28,9 +28,9 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 			.waitForComponent<PlayerServer>(Players.GetPlayerFromCharacter(this.instance)!)
 			.expect();
 
-		const currentInventory = store.getState(selectPlayerItems(this.player.instance));
+		const currentInventory = store.getState(selectPlayerInventory(this.player.instance));
 		this.updateInventoryFromState(currentInventory);
-		this.unsubscribeFromInventory = store.subscribe(selectPlayerItems(this.player.instance), (state) =>
+		this.unsubscribeFromInventory = store.subscribe(selectPlayerInventory(this.player.instance), (state) =>
 			this.updateInventoryFromState(state),
 		);
 
