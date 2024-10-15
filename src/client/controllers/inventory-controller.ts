@@ -1,20 +1,26 @@
+import { Components } from "@flamework/components";
 import { Controller, OnStart } from "@flamework/core";
+import { store } from "client/store";
 import { CharacterController } from "./character-controller";
 
 @Controller()
 export class InventoryController implements OnStart {
 	private inventory!: Folder;
 
-	constructor(private characterController: CharacterController) {}
+	constructor(private components: Components, private characterController: CharacterController) {}
 
 	onStart(): void {
-		// this is garbage
+		// TOOD: fix (this will break on respawn)
 		let characterClient = this.characterController.getCharacter();
 		while (characterClient === undefined) {
 			task.wait();
 			characterClient = this.characterController.getCharacter();
 		}
 
-		this.inventory = characterClient.instance.WaitForChild("Inventory") as Folder;
+		task.spawn(() => {
+			while (task.wait(5) !== undefined) {
+				print(store.getState());
+			}
+		});
 	}
 }

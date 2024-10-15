@@ -1,16 +1,20 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
+import { Array } from "@rbxts/sift";
 import { ItemId, ITEMS } from "shared/configs/items";
+import { MAX_HOTBAR_SLOTS } from "shared/constants";
 import { PlayerProfileData } from "shared/store/player-data";
+
+const EMPTY_VALUE = "empty";
 
 export interface InventoryState {
 	readonly items: ReadonlyMap<ItemId, number>;
-	readonly hotbar: ReadonlyMap<number, ItemId>;
+	readonly hotbar: ReadonlyArray<ItemId | typeof EMPTY_VALUE>;
 }
 
 export const DEFAULT_INVENTORY_STATE: InventoryState = {
 	items: new Map(),
-	hotbar: new Map(),
+	hotbar: Array.create<typeof EMPTY_VALUE | ItemId>(12),
 };
 
 export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
@@ -26,8 +30,26 @@ export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
 			return state;
 		}
 		const newQuantity = math.min(currentQuantity + quantity, maxQuantity);
+
+		// TODO: probably move this to a separate action
+		let existsInHotbar = false;
+		let openSlot = -1;
+		for (let i = 0; i < MAX_HOTBAR_SLOTS; i++) {
+			const occupier = state.hotbar[i];
+			if (occupier === item) {
+				existsInHotbar = true;
+				break;
+			}
+			if (occupier === EMPTY_VALUE && openSlot === -1) {
+				openSlot = i;
+			}
+		}
+
 		return Immut.produce(state, (draft) => {
 			draft.items.set(item, newQuantity);
+			if (!existsInHotbar && openSlot > -1) {
+				draft.hotbar[openSlot] = item;
+			}
 		});
 	},
 
