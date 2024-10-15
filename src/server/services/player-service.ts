@@ -1,15 +1,14 @@
 import { OnStart, Service } from "@flamework/core";
 import { Players } from "@rbxts/services";
+import { PlayerServer } from "server/components/player-server";
 
 @Service()
 export class PlayerService implements OnStart {
-	private playerAddedConn!: RBXScriptConnection;
-
 	onStart(): void {
-		this.playerAddedConn = Players.PlayerAdded.Connect((player) => this.onPlayerAdded(player));
+		Players.PlayerAdded.Connect((player) => this.onPlayerAdded(player));
 	}
 
 	private onPlayerAdded(player: Player): void {
-		player.AddTag("Player");
+		player.AddTag(PlayerServer.TAG);
 	}
 }

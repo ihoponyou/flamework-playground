@@ -13,6 +13,7 @@ import { ItemClient } from "./item-client";
 })
 export class CharacterClient extends AbstractCharacter implements OnStart {
 	protected readonly inventory = this.instance.WaitForChild("Inventory") as Folder;
+	protected readonly skills = this.instance.WaitForChild("Skills") as Folder;
 
 	constructor(private components: Components) {
 		super();
@@ -20,12 +21,18 @@ export class CharacterClient extends AbstractCharacter implements OnStart {
 
 	onStart(): void {
 		for (const instance of this.inventory.GetChildren()) {
-			const equippable = this.components.waitForComponent<ItemClient>(instance).expect() as Equippable;
-			store.addEquippable(instance.Name, equippable);
+			this.retrieveEquippable(instance);
 		}
-		this.inventory.ChildAdded.Connect((child) => {
-			const equippable = this.components.waitForComponent<ItemClient>(child).expect() as Equippable;
-			store.addEquippable(child.Name, equippable);
-		});
+		this.inventory.ChildAdded.Connect((child) => this.retrieveEquippable(child));
+
+		for (const instance of this.skills.GetChildren()) {
+			this.retrieveEquippable(instance);
+		}
+		this.skills.ChildAdded.Connect((child) => this.retrieveEquippable(child));
+	}
+
+	private retrieveEquippable(instance: Instance) {
+		const equippable = this.components.waitForComponent<ItemClient>(instance).expect() as Equippable;
+		store.addEquippable(instance.Name, equippable);
 	}
 }

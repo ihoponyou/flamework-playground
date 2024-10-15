@@ -21,3 +21,7 @@ export function selectPlayerData(player: Player) {
 		} as PlayerProfileData;
 	});
 }
+
+export function selectPlayerSkills(player: Player) {
+	return createSelector(selectPlayer(player), (state) => state?.skills);
+}

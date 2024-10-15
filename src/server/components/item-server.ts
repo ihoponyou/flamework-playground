@@ -1,7 +1,7 @@
 import { Component, Components } from "@flamework/components";
 import { Dependency } from "@flamework/core";
 import { promiseR6 } from "@rbxts/promise-character";
-import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
+import { ReplicatedStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
 import { Events } from "server/network";
 import { AbstractItem } from "shared/components/abstract-item";
@@ -18,17 +18,18 @@ import { Ownable } from "./ownable";
 	},
 })
 export class ItemServer extends AbstractItem {
-	static async createItem(quantity: number, name: string, parent?: Instance): Promise<ItemServer> {
+	static async instantiateItem(id: ItemId, quantity: number = 1, parent?: Instance): Promise<ItemServer> {
 		const newItem = new Instance("Model");
-		newItem.Parent = parent ?? ServerStorage;
+		newItem.Parent = script;
 
 		newItem.AddTag(Ownable.TAG);
 		newItem.AddTag(ItemServer.TAG);
-		newItem.Name = name;
+		newItem.Name = id;
 
 		return Dependency<Components>()
 			.waitForComponent<ItemServer>(newItem)
 			.andThen((item) => {
+				newItem.Parent = parent ?? script;
 				item.attributes.quantity = quantity;
 				return item;
 			});
