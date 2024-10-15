@@ -28,12 +28,14 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 			.waitForComponent<PlayerServer>(Players.GetPlayerFromCharacter(this.instance)!)
 			.expect();
 
-		const inventory = store.getState(selectPlayerItems(this.player.instance));
-		if (inventory) this.updateInventoryFromState(inventory);
+		const currentInventory = store.getState(selectPlayerItems(this.player.instance));
+		this.updateInventoryFromState(currentInventory);
 		this.unsubscribeFromInventory = store.subscribe(selectPlayerItems(this.player.instance), (state) =>
 			this.updateInventoryFromState(state),
 		);
 
+		const currentSkills = store.getState(selectPlayerSkills(this.player.instance));
+		this.updateSkillsFromState(currentSkills);
 		this.unsubscribeFromSkills = store.subscribe(selectPlayerSkills(this.player.instance), (state, prevState) =>
 			this.updateSkillsFromState(state, prevState),
 		);
@@ -64,6 +66,7 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 	private updateSkillsFromState(skills?: ReadonlySet<SkillId>, prevSkills?: ReadonlySet<SkillId>) {
 		if (skills === undefined) return;
 		for (const skill of skills) {
+			print(skill);
 			if (prevSkills && prevSkills.has(skill)) continue;
 			this.character.learnSkill(skill);
 		}

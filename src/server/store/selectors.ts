@@ -15,9 +15,10 @@ export function selectPlayerItems(player: Player) {
 }
 
 export function selectPlayerData(player: Player) {
-	return createSelector(selectPlayerInventory(player), (inventory) => {
+	return createSelector(selectPlayerInventory(player), selectPlayerSkills(player), (inventory, skills) => {
 		return {
 			inventory: inventory ?? DEFAULT_PLAYER_PROFILE_DATA.inventory,
+			skills: skills ?? DEFAULT_PLAYER_PROFILE_DATA.skills,
 		} as PlayerProfileData;
 	});
 }

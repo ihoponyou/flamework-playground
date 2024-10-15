@@ -1,5 +1,5 @@
 import { Component, Components } from "@flamework/components";
-import { Dependency } from "@flamework/core";
+import { Modding } from "@flamework/core";
 import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
@@ -26,7 +26,7 @@ export class ItemServer extends AbstractItem {
 		newItem.AddTag(ItemServer.TAG);
 		newItem.Name = id;
 
-		return Dependency<Components>()
+		return Modding.resolveSingleton(Components)
 			.waitForComponent<ItemServer>(newItem)
 			.andThen((item) => {
 				newItem.Parent = parent ?? script;

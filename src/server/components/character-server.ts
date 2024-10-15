@@ -52,15 +52,11 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 	}
 
 	learnSkill(id: SkillId): void {
-		SkillServer.instantiateSkill(id).andThen((skill) => {
-			skill.instance.Parent = this.skills;
-		});
+		SkillServer.instantiateSkill(id, this.skills);
 	}
 
 	giveItem(id: ItemId, quantity: number = 1): void {
-		ItemServer.instantiateItem(id, quantity).andThen((item) => {
-			item.instance.Parent = this.inventory;
-		});
+		ItemServer.instantiateItem(id, quantity, this.inventory);
 	}
 
 	getHiltBone(): Part {
