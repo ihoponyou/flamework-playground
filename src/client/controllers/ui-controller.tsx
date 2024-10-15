@@ -7,7 +7,7 @@ import { LOCAL_PLAYER_GUI } from "client/constants";
 import { store } from "client/store";
 import { selectIsBackpackOpen } from "client/store/slices/ui/selectors";
 import { App } from "client/ui/components/app";
-import { controllerContext } from "client/ui/components/context/controllers";
+import { controllerContext } from "client/ui/context/controller";
 import { CharacterController } from "./character-controller";
 
 @Controller()

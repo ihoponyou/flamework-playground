@@ -29,6 +29,7 @@ export function Hotbar() {
 				<uilistlayout
 					FillDirection={Enum.FillDirection.Horizontal}
 					HorizontalAlignment={Enum.HorizontalAlignment.Center}
+					VerticalAlignment={Enum.VerticalAlignment.Center}
 					Padding={new UDim(0, 10)}
 					SortOrder={Enum.SortOrder.LayoutOrder}
 				/>
@@ -36,7 +37,7 @@ export function Hotbar() {
 			{hotbar.map((id, slot) => {
 				const equippable = equippables.get(id);
 				if (equippable === undefined) {
-					return <EmptySlot />;
+					return isBackpackOpen ? <EmptySlot /> : undefined;
 				}
 				return <EquippableButton key={slot} equippable={equippable} equippableName={id} />;
 			})}
