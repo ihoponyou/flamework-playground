@@ -2,12 +2,11 @@ import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { UsefulModel } from "shared/components/useful-model";
 import { ItemId, ITEMS } from "shared/configs/items";
-import { Equippable } from "shared/equippable";
+import { Equippable, EquippableAttributes } from "shared/equippable";
 import { AbstractCharacter } from "./abstract-character";
 
-interface ItemAttributes {
+interface ItemAttributes extends EquippableAttributes {
 	quantity: number;
-	isEquipped: boolean;
 }
 
 @Component()
