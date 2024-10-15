@@ -7,6 +7,7 @@ import { AbstractCharacter } from "./abstract-character";
 
 interface ItemAttributes {
 	quantity: number;
+	isEquipped: boolean;
 }
 
 @Component()
@@ -26,6 +27,10 @@ export abstract class AbstractItem extends BaseComponent<ItemAttributes> impleme
 	abstract equip(equipper: AbstractCharacter): void;
 
 	abstract unequip(unequipper: AbstractCharacter): void;
+
+	isEquipped(): boolean {
+		return this.attributes.isEquipped;
+	}
 
 	show(): void {
 		this.worldModel.show();

@@ -3,6 +3,7 @@ import { Dependency } from "@flamework/core";
 import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
+import { Events } from "server/network";
 import { AbstractItem } from "shared/components/abstract-item";
 import { UsefulModel } from "shared/components/useful-model";
 import { ItemId } from "shared/configs/items";
@@ -13,6 +14,7 @@ import { Ownable } from "./ownable";
 	tag: AbstractItem.TAG,
 	defaults: {
 		quantity: -1,
+		isEquipped: false,
 	},
 })
 export class ItemServer extends AbstractItem {
@@ -37,7 +39,7 @@ export class ItemServer extends AbstractItem {
 	protected worldModel!: UsefulModel;
 	private bodyAttach = this.newBodyAttach();
 
-	constructor(private components: Components) {
+	constructor(private components: Components, private ownable: Ownable) {
 		super();
 	}
 
@@ -56,15 +58,30 @@ export class ItemServer extends AbstractItem {
 
 		this.bodyAttach.Parent = this.worldModel.instance;
 		this.bodyAttach.Part1 = this.worldModel.instance.PrimaryPart;
+
+		Events.equip.connect((player, instance, shouldEquip) => {
+			if (instance !== this.instance) return;
+			const characterInstance = player.Character;
+			if (characterInstance === undefined) return;
+			const character = this.components.getComponent<CharacterServer>(characterInstance);
+			if (character === undefined) return;
+			if (shouldEquip) {
+				this.equip(character);
+			} else {
+				this.unequip(character);
+			}
+		});
 	}
 
 	equip(equipper: CharacterServer): void {
-		this.weldTo(equipper.getHiltBone(), CFrame.identity);
+		this.weldTo(equipper.getHiltBone(), this.config.equipC0);
+		this.attributes.isEquipped = true;
 	}
 
 	unequip(unequipper: CharacterServer): void {
 		const rig = promiseR6(unequipper.instance).expect();
-		this.weldTo(rig[this.config.holsterPart], CFrame.identity);
+		this.weldTo(rig[this.config.holsterPart], this.config.holsterC0);
+		this.attributes.isEquipped = false;
 	}
 
 	private weldTo(part: BasePart, offset?: CFrame): void {
