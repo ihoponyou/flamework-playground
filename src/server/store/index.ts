@@ -5,6 +5,8 @@ import { DEFAULT_PLAYER_PROFILE_DATA } from "shared/store/player-data";
 import slices from "shared/store/slices";
 import { selectPlayer } from "./selectors";
 
+const SECONDS_BETWEEN_HYDRATES = 60 * 5;
+
 function broadcasterMiddleware(): ProducerMiddleware {
 	const broadcaster = createBroadcaster({
 		producers: {
@@ -23,6 +25,7 @@ function broadcasterMiddleware(): ProducerMiddleware {
 			const playerState = store.getState(selectPlayer(player));
 			Events.reflex.hydrate(player, playerState ?? DEFAULT_PLAYER_PROFILE_DATA);
 		},
+		hydrateRate: SECONDS_BETWEEN_HYDRATES,
 	});
 
 	Events.reflex.start.connect((player) => {

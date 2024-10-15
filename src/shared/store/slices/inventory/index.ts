@@ -5,7 +5,7 @@ import { ItemId, ITEMS } from "shared/configs/items";
 import { MAX_HOTBAR_SLOTS } from "shared/constants";
 import { PlayerProfileData } from "shared/store/player-data";
 
-const EMPTY_VALUE = "empty";
+const EMPTY_VALUE = "";
 
 export interface InventoryState {
 	readonly items: ReadonlyMap<ItemId, number>;
@@ -14,7 +14,7 @@ export interface InventoryState {
 
 export const DEFAULT_INVENTORY_STATE: InventoryState = {
 	items: new Map(),
-	hotbar: Array.create<typeof EMPTY_VALUE | ItemId>(12),
+	hotbar: Array.create<typeof EMPTY_VALUE | ItemId>(12, EMPTY_VALUE),
 };
 
 export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
@@ -36,12 +36,12 @@ export const inventorySlice = createProducer(DEFAULT_INVENTORY_STATE, {
 		let openSlot = -1;
 		for (let i = 0; i < MAX_HOTBAR_SLOTS; i++) {
 			const occupier = state.hotbar[i];
+			if (occupier === EMPTY_VALUE && openSlot === -1) {
+				openSlot = i;
+			}
 			if (occupier === item) {
 				existsInHotbar = true;
 				break;
-			}
-			if (occupier === EMPTY_VALUE && openSlot === -1) {
-				openSlot = i;
 			}
 		}
 

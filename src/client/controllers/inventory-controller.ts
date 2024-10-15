@@ -1,6 +1,5 @@
 import { Components } from "@flamework/components";
 import { Controller, OnStart } from "@flamework/core";
-import { store } from "client/store";
 import { CharacterController } from "./character-controller";
 
 @Controller()
@@ -17,10 +16,10 @@ export class InventoryController implements OnStart {
 			characterClient = this.characterController.getCharacter();
 		}
 
-		task.spawn(() => {
-			while (task.wait(5) !== undefined) {
-				print(store.getState());
-			}
-		});
+		// task.spawn(() => {
+		// 	while (task.wait(5) !== undefined) {
+		// 		print(store.getState());
+		// 	}
+		// });
 	}
 }
