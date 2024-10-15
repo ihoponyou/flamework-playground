@@ -45,6 +45,7 @@ export function EquippableButton(props: Props) {
 			FontFace={
 				new Font("rbxasset://fonts/families/Balthazar.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 			}
+			LayoutOrder={props.slot ?? -1}
 			Selectable={false}
 			Size={UDim2.fromOffset(60, 60)}
 			Text={props.equippableName}
