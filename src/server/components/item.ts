@@ -72,7 +72,15 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart, Equi
 
 	unequip(unequipper: CharacterServer): void {
 		const rig = promiseR6(unequipper.instance).expect();
-		this.weldTo(rig[this.config.holsterLimb], CFrame.identity);
+		this.weldTo(rig[this.config.holsterPart], CFrame.identity);
+	}
+
+	show(): void {
+		this.worldModel.show();
+	}
+
+	hide(): void {
+		this.worldModel.hide();
 	}
 
 	private weldTo(part: BasePart, offset?: CFrame): void {

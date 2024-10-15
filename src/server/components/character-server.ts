@@ -18,9 +18,11 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 
 	onStart(): void {
 		this.inventory.Parent = this.instance;
+		this.hiltBone.Parent = this.instance;
+
 		// should use promise rig for this
 		const rightArm = this.instance.WaitForChild("Right Arm") as BasePart;
-		this.hiltBone.Parent = rightArm;
+
 		this.hiltJoint.Parent = this.hiltBone;
 		this.hiltJoint.Part0 = rightArm;
 		this.hiltJoint.Part1 = this.hiltBone;

@@ -6,20 +6,23 @@ export enum ItemId {
 }
 
 export interface ItemConfig {
-	maxQuantity: number;
-	holsterLimb: R6BodyPart;
-	equipLimb: R6BodyPart;
+	readonly maxQuantity: number;
+	readonly holsterPart: R6BodyPart;
+	readonly holsterC0: CFrame;
+	readonly hideOnHolster: boolean;
 }
 
 export const ITEMS: Record<ItemId, ItemConfig> = {
 	Goblet: {
 		maxQuantity: 99,
-		holsterLimb: "Torso",
-		equipLimb: "Right Arm",
+		holsterPart: "Torso",
+		holsterC0: CFrame.identity,
+		hideOnHolster: true,
 	},
 	"Bronze Sword": {
 		maxQuantity: 1,
-		holsterLimb: "Torso",
-		equipLimb: "Right Arm",
+		holsterPart: "Torso",
+		holsterC0: new CFrame(0, 0, -2),
+		hideOnHolster: false,
 	},
 };
