@@ -11,7 +11,7 @@ export class UsefulModel extends BaseComponent<{}, Model> implements OnStart {
 	private originalTransparencies = new Map<BasePart, number>();
 
 	onStart(): void {
-		print(`i, ${this.instance.GetFullName()}, am a useful model! ^_^`);
+		// print(`i, ${this.instance.GetFullName()}, am a useful model! ^_^`);
 
 		for (const instance of this.instance.GetDescendants()) {
 			if (!instance.IsA("BasePart")) continue;

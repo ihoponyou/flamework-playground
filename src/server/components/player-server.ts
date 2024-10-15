@@ -5,7 +5,7 @@ import { selectPlayerItems } from "server/store/selectors";
 import { AbstractPlayer } from "shared/components/abstract-player";
 import { ItemId } from "shared/configs/items";
 import { CharacterServer } from "./character-server";
-import { Item } from "./item";
+import { ItemServer } from "./item-server";
 
 function playerHasInventory(inventory: ReadonlyMap<ItemId, number> | undefined) {
 	return inventory !== undefined;
@@ -64,7 +64,7 @@ export class PlayerServer extends AbstractPlayer implements OnStart {
 			}
 
 			print(`creating ${itemName}`);
-			Item.createItem(quantity, itemName).andThen((item) => {
+			ItemServer.createItem(quantity, itemName).andThen((item) => {
 				if (this.character === undefined) {
 					warn(this.UNDEFINED_CHARACTER_MESSAGE);
 					return;

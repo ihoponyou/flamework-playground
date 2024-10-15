@@ -3,6 +3,7 @@ import { Equippable } from "shared/equippable";
 
 interface Props {
 	equippable: Equippable;
+	equippableName: string;
 	quantity?: number;
 	slot?: number;
 }
@@ -14,7 +15,23 @@ const SLOT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="]
 
 export function EquippableButton(props: Props) {
 	return (
-		<textbutton Size={SIZE}>
+		<textbutton
+			AnchorPoint={new Vector2(0.5, 0)}
+			// AutoButtonColor={false}
+			// BackgroundColor3={color}
+			BorderSizePixel={0}
+			Font={Enum.Font.Fantasy}
+			FontFace={
+				new Font("rbxasset://fonts/families/Balthazar.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+			}
+			Selectable={false}
+			Size={SIZE}
+			Text={props.equippableName}
+			TextColor3={Color3.fromRGB(47, 43, 30)}
+			TextSize={13}
+			// TextTransparency={textTransparency}
+			TextWrapped={true}
+		>
 			<textlabel
 				key="Slot"
 				AnchorPoint={new Vector2(0.5, 0.5)}

@@ -1,56 +1,48 @@
-import { BaseComponent, Component, Components } from "@flamework/components";
-import { Dependency, OnStart } from "@flamework/core";
+import { Component, Components } from "@flamework/components";
+import { Dependency } from "@flamework/core";
 import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage, ServerStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
+import { AbstractItem } from "shared/components/abstract-item";
 import { UsefulModel } from "shared/components/useful-model";
 import { ItemId } from "shared/configs/items";
-import { Equippable } from "shared/equippable";
 import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 
-interface ItemAttributes {
-	quantity: number;
-}
-
 @Component({
-	tag: Item.TAG,
+	tag: AbstractItem.TAG,
 	defaults: {
 		quantity: -1,
 	},
 })
-export class Item extends BaseComponent<ItemAttributes> implements OnStart, Equippable {
-	static readonly TAG = "Item";
-
-	static async createItem(quantity: number, name: string, parent?: Instance): Promise<Item> {
+export class ItemServer extends AbstractItem {
+	static async createItem(quantity: number, name: string, parent?: Instance): Promise<ItemServer> {
 		const newItem = new Instance("Model");
 		newItem.Parent = parent ?? ServerStorage;
 
 		newItem.AddTag(Ownable.TAG);
-		newItem.AddTag(Item.TAG);
+		newItem.AddTag(ItemServer.TAG);
 		newItem.Name = name;
 
 		return Dependency<Components>()
-			.waitForComponent<Item>(newItem)
+			.waitForComponent<ItemServer>(newItem)
 			.andThen((item) => {
 				item.attributes.quantity = quantity;
 				return item;
 			});
 	}
 
-	public readonly config = ITEMS_SERVER[this.instance.Name as ItemId];
+	public override readonly config = ITEMS_SERVER[this.instance.Name as ItemId];
 
+	protected worldModel!: UsefulModel;
 	private bodyAttach = this.newBodyAttach();
-	private worldModel!: UsefulModel;
 
 	constructor(private components: Components) {
 		super();
 	}
 
-	onStart(): void {
-		if (this.config === undefined) {
-			error(`item config not found for ${this.instance.Name}`);
-		}
+	override onStart(): void {
+		super.onStart();
 
 		const template = ReplicatedStorage.WorldModels.FindFirstChild(this.instance.Name);
 		if (template === undefined) {
@@ -58,7 +50,7 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart, Equi
 		}
 		const clone = template.Clone();
 		clone.Parent = this.instance;
-		clone.Name = `WorldModel(${this.instance.Name})`;
+		clone.Name = `WorldModel`;
 		clone.AddTag(UsefulModel.TAG);
 		this.worldModel = this.components.waitForComponent<UsefulModel>(clone).expect();
 
@@ -73,14 +65,6 @@ export class Item extends BaseComponent<ItemAttributes> implements OnStart, Equi
 	unequip(unequipper: CharacterServer): void {
 		const rig = promiseR6(unequipper.instance).expect();
 		this.weldTo(rig[this.config.holsterPart], CFrame.identity);
-	}
-
-	show(): void {
-		this.worldModel.show();
-	}
-
-	hide(): void {
-		this.worldModel.hide();
 	}
 
 	private weldTo(part: BasePart, offset?: CFrame): void {
