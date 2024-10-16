@@ -5,7 +5,7 @@ import { Players } from "@rbxts/services";
 import { LOCAL_PLAYER } from "client/constants";
 import { store } from "client/store";
 import { AbstractCharacter } from "shared/components/abstract-character";
-import { Equippable } from "shared/equippable";
+import { Equippable } from "shared/types/equippable";
 import { ItemClient } from "./item-client";
 import { SkillClient } from "./skill-client";
 

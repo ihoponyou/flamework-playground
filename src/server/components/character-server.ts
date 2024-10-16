@@ -1,8 +1,8 @@
 import { Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
-import { ItemId } from "shared/configs/items";
-import { SkillId } from "shared/skill-id";
+import { ItemId } from "shared/types/item-id";
+import { SkillId } from "shared/types/skill-id";
 import { ItemServer } from "./item-server";
 import { SkillServer } from "./skill-server";
 

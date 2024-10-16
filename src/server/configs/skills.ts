@@ -1,6 +1,6 @@
 import { ClassId } from "shared/configs/classes";
-import { SkillId } from "shared/skill-id";
-import { WeaponType } from "shared/weapon-type";
+import { SkillId } from "shared/types/skill-id";
+import { WeaponType } from "shared/types/weapon-type";
 
 export interface SkillConfig {
 	readonly cooldown: number;

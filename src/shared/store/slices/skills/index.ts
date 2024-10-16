@@ -1,7 +1,7 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
-import { SkillId } from "shared/skill-id";
 import { PlayerProfileData } from "shared/store/player-data";
+import { SkillId } from "shared/types/skill-id";
 
 export type SkillsState = ReadonlySet<SkillId>;
 

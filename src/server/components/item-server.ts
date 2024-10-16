@@ -6,7 +6,7 @@ import { ITEMS_SERVER } from "server/configs/items";
 import { Events } from "server/network";
 import { AbstractItem } from "shared/components/abstract-item";
 import { UsefulModel } from "shared/components/useful-model";
-import { ItemId } from "shared/configs/items";
+import { ItemId } from "shared/types/item-id";
 import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 

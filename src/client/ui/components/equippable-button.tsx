@@ -1,5 +1,5 @@
 import React, { useContext } from "@rbxts/react";
-import { Equippable } from "shared/equippable";
+import { Equippable } from "shared/types/equippable";
 import { controllerContext } from "../context/controller";
 
 interface Props {

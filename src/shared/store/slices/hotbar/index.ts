@@ -1,14 +1,11 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
 import { Array } from "@rbxts/sift";
-import { ItemId } from "shared/configs/items";
 import { MAX_HOTBAR_SLOTS } from "shared/constants";
-import { SkillId } from "shared/skill-id";
 import { PlayerProfileData } from "shared/store/player-data";
+import { EquippableId } from "shared/types/equippable";
 
 const EMPTY_VALUE = "";
-
-type EquippableId = ItemId | SkillId;
 
 export type HotbarState = ReadonlyArray<typeof EMPTY_VALUE | EquippableId>;
 

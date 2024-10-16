@@ -1,9 +1,5 @@
-import { R6BodyPart } from "shared/r6-body-part";
-
-export enum ItemId {
-	GOBLET = "Goblet",
-	BRONZE_SWORD = "Bronze Sword",
-}
+import { ItemId } from "shared/types/item-id";
+import { R6BodyPart } from "shared/types/r6-body-part";
 
 export interface ItemConfig {
 	readonly maxQuantity: number;

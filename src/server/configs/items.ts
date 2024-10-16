@@ -1,5 +1,6 @@
 import { CharacterServer } from "server/components/character-server";
-import { ItemConfig, ItemId, ITEMS } from "shared/configs/items";
+import { ItemConfig, ITEMS } from "shared/configs/items";
+import { ItemId } from "shared/types/item-id";
 
 export interface ItemConfigServer extends ItemConfig {
 	someServerSpecificProperty: (character: CharacterServer) => void;

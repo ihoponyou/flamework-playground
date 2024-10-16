@@ -1,7 +1,7 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { store } from "server/store";
-import { ItemId } from "shared/configs/items";
+import { ItemId } from "shared/types/item-id";
 
 @Component({
 	tag: "ItemGiver",

@@ -3,7 +3,7 @@ import { Modding, OnStart } from "@flamework/core";
 import { SKILLS } from "server/configs/skills";
 import { Events } from "server/network";
 import { AbstractSkill } from "shared/components/abstract-skill";
-import { SkillId } from "shared/skill-id";
+import { SkillId } from "shared/types/skill-id";
 import { CharacterServer } from "./character-server";
 
 @Component({

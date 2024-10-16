@@ -1,4 +1,8 @@
-import { AbstractCharacter } from "./components/abstract-character";
+import { AbstractCharacter } from "shared/components/abstract-character";
+import { ItemId } from "./item-id";
+import { SkillId } from "./skill-id";
+
+export type EquippableId = ItemId | SkillId;
 
 export interface EquippableAttributes {
 	isEquipped: boolean;

@@ -3,8 +3,8 @@ import { OnStart } from "@flamework/core";
 import { Players } from "@rbxts/services";
 import { store } from "server/store";
 import { selectPlayerInventory, selectPlayerSkills } from "server/store/selectors";
-import { ItemId } from "shared/configs/items";
-import { SkillId } from "shared/skill-id";
+import { ItemId } from "shared/types/item-id";
+import { SkillId } from "shared/types/skill-id";
 import { CharacterServer } from "./character-server";
 import { PlayerServer } from "./player-server";
 
