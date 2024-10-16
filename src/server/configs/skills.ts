@@ -6,7 +6,7 @@ export interface SkillConfig {
 	readonly cooldown: number;
 	readonly weaponXpRequired: Record<WeaponType, number>;
 	readonly requiredClasses: ReadonlyArray<ClassId>;
-	readonly requiredItem?: WeaponType;
+	readonly requiredWeaponType: WeaponType | undefined;
 }
 
 export const SKILLS: Record<SkillId, SkillConfig> = {
@@ -19,6 +19,7 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 			[WeaponType.SWORD]: 0,
 		},
 		requiredClasses: [],
+		requiredWeaponType: undefined,
 	},
 	"Pommel Strike": {
 		cooldown: 12,
@@ -29,5 +30,6 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 			[WeaponType.SWORD]: 10,
 		},
 		requiredClasses: [ClassId.WARRIOR],
+		requiredWeaponType: WeaponType.SWORD,
 	},
 };

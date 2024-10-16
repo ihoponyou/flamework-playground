@@ -26,6 +26,11 @@ export class ItemServer extends AbstractItem {
 		newItem.AddTag(ItemServer.TAG);
 		newItem.Name = id;
 
+		const config = ITEMS_SERVER[id];
+		for (const tag of config.tags) {
+			newItem.AddTag(tag);
+		}
+
 		return Modding.resolveSingleton(Components)
 			.waitForComponent<ItemServer>(newItem)
 			.andThen((item) => {

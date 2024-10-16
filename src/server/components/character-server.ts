@@ -3,8 +3,10 @@ import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
 import { ItemId } from "shared/types/item-id";
 import { SkillId } from "shared/types/skill-id";
+import { WeaponType } from "shared/types/weapon-type";
 import { ItemServer } from "./item-server";
 import { SkillServer } from "./skill-server";
+import { Weapon } from "./weapon";
 
 @Component({
 	tag: AbstractCharacter.TAG,
@@ -15,6 +17,12 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 
 	private hiltJoint = this.newHiltJoint();
 	private hiltBone = this.newHiltBone();
+	private weapons: Record<WeaponType, Weapon | undefined> = {
+		[WeaponType.FIST]: undefined,
+		[WeaponType.DAGGER]: undefined,
+		[WeaponType.SPEAR]: undefined,
+		[WeaponType.SWORD]: undefined,
+	};
 
 	constructor(protected components: Components) {
 		super();
@@ -44,23 +52,26 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		return item;
 	}
 
-	getSkill(id: SkillId): SkillServer | undefined {
-		const instance = this.skills.FindFirstChild(id);
-		if (instance === undefined) return undefined;
-		const skill = this.components.getComponent<SkillServer>(instance);
-		return skill;
-	}
-
 	learnSkill(id: SkillId): void {
 		SkillServer.instantiateSkill(id, this.skills);
 	}
 
 	giveItem(id: ItemId, quantity: number = 1): void {
-		ItemServer.instantiateItem(id, quantity, this.inventory);
+		ItemServer.instantiateItem(id, quantity, this.inventory).andThen((item) => {
+			// holster
+			item.unequip(this);
+
+			if (!item.instance.HasTag(Weapon.TAG)) return;
+			this.components.waitForComponent<Weapon>(item.instance).andThen((weapon) => this.cacheWeapon(weapon));
+		});
 	}
 
 	getHiltBone(): Part {
 		return this.hiltBone;
+	}
+
+	getWeaponOfType(weaponType: WeaponType): Weapon | undefined {
+		return this.weapons[weaponType];
 	}
 
 	private newFolder(name: string): Folder {
@@ -85,5 +96,14 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		bone.Massless = true;
 		bone.Transparency = 1;
 		return bone;
+	}
+
+	// what if the character drops the highest tier weapon
+	private cacheWeapon(weapon: Weapon) {
+		const weaponType = weapon.getType();
+		const currentWeaponOfType = this.weapons[weaponType];
+		if (currentWeaponOfType === undefined || currentWeaponOfType.getEquipPriority() < weapon.getEquipPriority()) {
+			this.weapons[weaponType] = weapon;
+		}
 	}
 }

@@ -5,6 +5,7 @@ import { Events } from "server/network";
 import { AbstractSkill } from "shared/components/abstract-skill";
 import { SkillId } from "shared/types/skill-id";
 import { CharacterServer } from "./character-server";
+import { Weapon } from "./weapon";
 
 @Component({
 	tag: AbstractSkill.TAG,
@@ -30,6 +31,8 @@ export class SkillServer extends AbstractSkill implements OnStart {
 
 	public readonly config = SKILLS[this.instance.Name as SkillId];
 
+	private equippedWeapon?: Weapon;
+
 	constructor(private components: Components) {
 		super();
 	}
@@ -38,6 +41,7 @@ export class SkillServer extends AbstractSkill implements OnStart {
 		if (this.config === undefined) {
 			error(`skill config not found for ${this.instance.Name}`);
 		}
+
 		Events.equip.connect((player, instance, shouldEquip) => {
 			if (instance !== this.instance) return;
 			const characterInstance = player.Character;
@@ -53,11 +57,22 @@ export class SkillServer extends AbstractSkill implements OnStart {
 	}
 
 	override equip(equipper: CharacterServer): void {
+		if (this.config.requiredWeaponType !== undefined) {
+			const requiredWeapon = equipper.getWeaponOfType(this.config.requiredWeaponType);
+			if (requiredWeapon === undefined) return;
+			requiredWeapon.equip(equipper);
+			this.equippedWeapon = requiredWeapon;
+		}
+
 		this.attributes.isEquipped = true;
 	}
+
 	override unequip(unequipper: CharacterServer): void {
+		this.equippedWeapon?.unequip(unequipper);
+
 		this.attributes.isEquipped = false;
 	}
+
 	override use(user: CharacterServer): void {
 		print("BOOM!", this.instance.Name);
 	}

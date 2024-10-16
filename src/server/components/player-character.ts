@@ -66,7 +66,6 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 	private updateSkillsFromState(skills?: ReadonlySet<SkillId>, prevSkills?: ReadonlySet<SkillId>) {
 		if (skills === undefined) return;
 		for (const skill of skills) {
-			print(skill);
 			if (prevSkills && prevSkills.has(skill)) continue;
 			this.character.learnSkill(skill);
 		}

@@ -1,18 +1,18 @@
-import { CharacterServer } from "server/components/character-server";
+import { Weapon } from "server/components/weapon";
 import { ItemConfig, ITEMS } from "shared/configs/items";
 import { ItemId } from "shared/types/item-id";
 
 export interface ItemConfigServer extends ItemConfig {
-	someServerSpecificProperty: (character: CharacterServer) => void;
+	readonly tags: ReadonlyArray<string>;
 }
 
 export const ITEMS_SERVER: Record<ItemId, ItemConfigServer> = {
 	Goblet: {
 		...ITEMS.Goblet,
-		someServerSpecificProperty: () => true,
+		tags: [],
 	},
 	"Bronze Sword": {
 		...ITEMS["Bronze Sword"],
-		someServerSpecificProperty: () => false,
+		tags: [Weapon.TAG],
 	},
 };
