@@ -1,4 +1,5 @@
-import React, { useContext } from "@rbxts/react";
+import { useMotion } from "@rbxts/pretty-react-hooks";
+import React, { useContext, useState } from "@rbxts/react";
 import { Equippable } from "shared/types/equippable";
 import { controllerContext } from "../context/controller";
 
@@ -28,18 +29,36 @@ const THEMES: Record<"equipped" | "unequipped", ButtonTheme> = {
 	},
 };
 
+const TWEEN_OPTIONS: Ripple.TweenOptions = {
+	time: 0.1,
+};
+
 // TODO: change with custom binds
 const SLOT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="];
 
 export function EquippableButton(props: Props) {
-	const theme = THEMES[props.equippable.isEquipped() ? "equipped" : "unequipped"];
 	const controllers = useContext(controllerContext);
+
+	const [isEquipped, setIsEquipped] = useState(false);
+
+	const theme = THEMES[isEquipped ? "equipped" : "unequipped"];
+
+	const [backgroundColor, backgroundColorMotion] = useMotion(THEMES.unequipped.backgroundColor3);
+	const [sizeOffset, sizeOffsetMotion] = useMotion(THEMES.unequipped.sizeOffset);
+	const [textTransparency, textTransparencyMotion] = useMotion(THEMES.unequipped.textTransparency);
+
+	backgroundColorMotion.tween(theme.backgroundColor3, TWEEN_OPTIONS);
+	sizeOffsetMotion.tween(theme.sizeOffset, {
+		...TWEEN_OPTIONS,
+		style: isEquipped ? Enum.EasingStyle.Back : undefined,
+	});
+	textTransparencyMotion.tween(theme.textTransparency, TWEEN_OPTIONS);
 
 	return (
 		<textbutton
 			AnchorPoint={new Vector2(0.5, 0)}
 			AutoButtonColor={false}
-			BackgroundColor3={theme.backgroundColor3}
+			BackgroundColor3={backgroundColor}
 			BorderSizePixel={0}
 			Font={Enum.Font.Fantasy}
 			FontFace={
@@ -51,18 +70,22 @@ export function EquippableButton(props: Props) {
 			Text={props.equippableName}
 			TextColor3={Color3.fromRGB(47, 43, 30)}
 			TextSize={13}
-			TextTransparency={theme.textTransparency}
+			TextTransparency={textTransparency}
 			TextWrapped={true}
 			Event={{
 				MouseButton1Down: (rbx, x, y) => {
 					const character = controllers.character.getCharacter();
 					if (character === undefined) {
-						warn("could not get character");
+						warn("undefined character");
 						return;
 					}
-					props.equippable.isEquipped()
-						? props.equippable.unequip(character)
-						: props.equippable.equip(character);
+					if (props.equippable.isEquipped()) {
+						props.equippable.unequip(character);
+						setIsEquipped(false);
+					} else {
+						props.equippable.equip(character);
+						setIsEquipped(true);
+					}
 				},
 			}}
 		>
@@ -74,7 +97,7 @@ export function EquippableButton(props: Props) {
 				ImageColor3={Color3.fromRGB(245, 197, 130)}
 				Position={new UDim2(0.5, 0, 0.5, 0)}
 				ScaleType={Enum.ScaleType.Slice}
-				Size={new UDim2(1, theme.sizeOffset, 1, theme.sizeOffset)}
+				Size={sizeOffset.map((value) => new UDim2(1, value, 1, value))}
 				SliceCenter={new Rect(13, 13, 13, 13)}
 			/>
 			<textlabel
