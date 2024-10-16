@@ -50,8 +50,8 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 
 	private updateInventoryFromState(items?: ReadonlyMap<ItemId, number>) {
 		if (items === undefined) return;
-		for (const [itemName, quantity] of items) {
-			const existingItem = this.character.getItem(itemName);
+		for (const [itemId, quantity] of items) {
+			const existingItem = this.character.getItem(itemId);
 			if (existingItem) {
 				if (existingItem.attributes.quantity !== quantity) {
 					existingItem.attributes.quantity = quantity;
@@ -59,15 +59,17 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 				continue;
 			}
 
-			this.character.giveItem(itemName, quantity);
+			this.character.giveItem(itemId, quantity);
+			store.addToHotbar(this.player.instance, itemId);
 		}
 	}
 
 	private updateSkillsFromState(skills?: ReadonlySet<SkillId>, prevSkills?: ReadonlySet<SkillId>) {
 		if (skills === undefined) return;
-		for (const skill of skills) {
-			if (prevSkills && prevSkills.has(skill)) continue;
-			this.character.learnSkill(skill);
+		for (const skillId of skills) {
+			if (prevSkills && prevSkills.has(skillId)) continue;
+			this.character.learnSkill(skillId);
+			store.addToHotbar(this.player.instance, skillId);
 		}
 	}
 }

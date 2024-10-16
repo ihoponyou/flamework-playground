@@ -81,9 +81,11 @@ export function EquippableButton(props: Props) {
 					}
 					if (props.equippable.isEquipped()) {
 						props.equippable.unequip(character);
+						if (props.equippable.isEquipped()) return; // TODO: this is jank af
 						setIsEquipped(false);
 					} else {
 						props.equippable.equip(character);
+						if (!props.equippable.isEquipped()) return;
 						setIsEquipped(true);
 					}
 				},
