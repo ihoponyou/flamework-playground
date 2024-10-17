@@ -8,7 +8,8 @@ interface ClientToServerEvents {
 		start(): void;
 	};
 	equip(equippable: Instance, shouldEquip: boolean): void;
-	moveEquippableInInventory(equippable: EquippableId, hotbarSlot?: number): void;
+	addToHotbar(equippableId: EquippableId, hotbarSlot: number): void;
+	removeFromHotbar(equippableId: EquippableId): void;
 }
 
 interface ServerToClientEvents {

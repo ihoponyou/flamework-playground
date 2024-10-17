@@ -1,6 +1,7 @@
 import { BaseComponent, Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { Players } from "@rbxts/services";
+import { Events } from "server/network";
 import { store } from "server/store";
 import { selectPlayerInventory, selectPlayerSkills } from "server/store/selectors";
 import { ItemId } from "shared/types/item-id";
@@ -39,6 +40,11 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 		this.unsubscribeFromSkills = store.subscribe(selectPlayerSkills(this.player.instance), (state, prevState) =>
 			this.updateSkillsFromState(state, prevState),
 		);
+
+		// TODO: this fires twice?
+		Events.addToHotbar.connect((player, id, slot) => {
+			store.addToHotbar(player, id, slot);
+		});
 	}
 
 	override destroy(): void {

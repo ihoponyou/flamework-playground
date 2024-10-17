@@ -1,5 +1,6 @@
 import { useMotion } from "@rbxts/pretty-react-hooks";
-import React, { useContext, useState } from "@rbxts/react";
+import React, { Binding, useContext, useState } from "@rbxts/react";
+import { GuiService } from "@rbxts/services";
 import { Equippable } from "shared/types/equippable";
 import { controllersContext } from "../context/controllers";
 
@@ -8,6 +9,9 @@ export interface EquippableButtonProps {
 	equippableName: string;
 	quantity?: number;
 	slot?: number;
+	position?: Binding<UDim2> | UDim2;
+	onM1Up?: (mousePos: Vector2) => void;
+	onM1Down?: (cursorOffset: Vector2) => void;
 }
 
 interface ButtonTheme {
@@ -35,6 +39,11 @@ const TWEEN_OPTIONS: Ripple.TweenOptions = {
 
 // TODO: change with custom binds
 const SLOT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="];
+
+function calculateMouseScreenPos(mousePosWithInset: Vector2): Vector2 {
+	const inset = GuiService.GetGuiInset()[0];
+	return mousePosWithInset.sub(inset);
+}
 
 export function EquippableButton(props: EquippableButtonProps) {
 	const controllers = useContext(controllersContext);
@@ -65,6 +74,7 @@ export function EquippableButton(props: EquippableButtonProps) {
 				new Font("rbxasset://fonts/families/Balthazar.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
 			}
 			LayoutOrder={props.slot ?? -1}
+			Position={props.position}
 			Selectable={false}
 			Size={UDim2.fromOffset(60, 60)}
 			Text={props.equippableName}
@@ -74,22 +84,28 @@ export function EquippableButton(props: EquippableButtonProps) {
 			TextWrapped={true}
 			Event={{
 				MouseButton1Down: (rbx, x, y) => {
-					const character = controllers.character.getCharacter();
-					if (character === undefined) {
-						warn("undefined character");
-						return;
-					}
-					if (props.equippable.isEquipped()) {
-						props.equippable.unequip(character);
-						if (props.equippable.isEquipped()) return; // TODO: this is jank af
-						setIsEquipped(false);
+					if (props.onM1Down) {
+						props.onM1Down(rbx.AbsolutePosition.sub(calculateMouseScreenPos(new Vector2(x, y))));
 					} else {
-						props.equippable.equip(character);
-						if (!props.equippable.isEquipped()) return;
-						setIsEquipped(true);
+						const character = controllers.character.getCharacter();
+						if (character === undefined) {
+							warn("undefined character");
+							return;
+						}
+						if (props.equippable.isEquipped()) {
+							props.equippable.unequip(character);
+							setIsEquipped(false);
+						} else {
+							props.equippable.equip(character);
+							setIsEquipped(true);
+						}
 					}
 				},
-				MouseButton1Up: () => {},
+				MouseButton1Up: (_rbx, x, y) => {
+					if (props.onM1Up) {
+						props.onM1Up(calculateMouseScreenPos(new Vector2(x, y)));
+					}
+				},
 			}}
 		>
 			<imagelabel

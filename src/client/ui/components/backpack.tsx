@@ -1,6 +1,6 @@
-import React from "@rbxts/react";
+import React, { PropsWithChildren } from "@rbxts/react";
 
-export function Backpack() {
+export function Backpack(props: PropsWithChildren) {
 	return (
 		<frame
 			key="Backpack"
@@ -44,6 +44,7 @@ export function Backpack() {
 					PaddingRight={new UDim(0, 8)}
 					PaddingTop={new UDim(0, 8)}
 				/>
+				{props.children}
 			</scrollingframe>
 		</frame>
 	);
