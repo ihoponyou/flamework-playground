@@ -1,5 +1,5 @@
 import { useMotion } from "@rbxts/pretty-react-hooks";
-import React, { Binding, useContext, useState } from "@rbxts/react";
+import React, { Binding, useContext, useEffect, useState } from "@rbxts/react";
 import { GuiService } from "@rbxts/services";
 import { Equippable } from "shared/types/equippable";
 import { controllersContext } from "../context/controllers";
@@ -49,6 +49,10 @@ export function EquippableButton(props: EquippableButtonProps) {
 	const controllers = useContext(controllersContext);
 
 	const [isEquipped, setIsEquipped] = useState(false);
+	useEffect(() => {
+		const conn = props.equippable.onEquipChanged(setIsEquipped);
+		return () => conn.Disconnect();
+	}, [props.equippable]);
 
 	const theme = THEMES[isEquipped ? "equipped" : "unequipped"];
 
@@ -94,10 +98,8 @@ export function EquippableButton(props: EquippableButtonProps) {
 						}
 						if (props.equippable.isEquipped()) {
 							props.equippable.unequip(character);
-							setIsEquipped(false);
 						} else {
 							props.equippable.equip(character);
-							setIsEquipped(true);
 						}
 					}
 				},

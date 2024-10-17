@@ -12,4 +12,5 @@ export interface Equippable {
 	equip(equipper: AbstractCharacter): void;
 	unequip(unequipper: AbstractCharacter): void;
 	isEquipped(): boolean;
+	onEquipChanged(callback: (isEquipped: boolean) => void): RBXScriptConnection;
 }

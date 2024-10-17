@@ -25,6 +25,10 @@ export class Weapon extends BaseComponent implements Equippable {
 		this.item.unequip(unequipper);
 	}
 
+	onEquipChanged(callback: (isEquipped: boolean) => void): RBXScriptConnection {
+		return this.item.onEquipChanged(callback);
+	}
+
 	isEquipped(): boolean {
 		return this.item.isEquipped();
 	}

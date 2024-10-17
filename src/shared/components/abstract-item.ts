@@ -25,8 +25,11 @@ export abstract class AbstractItem extends BaseComponent<ItemAttributes> impleme
 	}
 
 	abstract equip(equipper: AbstractCharacter): void;
-
 	abstract unequip(unequipper: AbstractCharacter): void;
+
+	onEquipChanged(callback: (isEquipped: boolean) => void): RBXScriptConnection {
+		return this.onAttributeChanged("isEquipped", (newValue) => callback(newValue));
+	}
 
 	isEquipped(): boolean {
 		return this.attributes.isEquipped;
