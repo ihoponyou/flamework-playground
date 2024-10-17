@@ -1,6 +1,6 @@
 import { useContext } from "@rbxts/react";
 import { useSelector } from "@rbxts/react-reflex";
-import { appRefContext } from "client/ui/context/appRef";
+import { appRefContext } from "client/ui/context/app-ref";
 import { selectHotbar } from "shared/store/slices/hotbar/selectors";
 import { ItemId } from "shared/types/item-id";
 import { EquippableButtonProps } from "./equippable-button";

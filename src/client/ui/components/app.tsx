@@ -1,7 +1,7 @@
 import React, { useRef } from "@rbxts/react";
 import { useSelector } from "@rbxts/react-reflex";
 import { selectIsBackpackOpen } from "client/store/slices/ui/selectors";
-import { appRefContext } from "client/ui/context/appRef";
+import { appRefContext } from "client/ui/context/app-ref";
 import { Backpack } from "./backpack";
 import { Hotbar } from "./hotbar";
 
