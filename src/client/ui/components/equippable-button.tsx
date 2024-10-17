@@ -1,9 +1,9 @@
 import { useMotion } from "@rbxts/pretty-react-hooks";
 import React, { useContext, useState } from "@rbxts/react";
 import { Equippable } from "shared/types/equippable";
-import { controllerContext } from "../context/controller";
+import { controllersContext } from "../context/controllers";
 
-interface Props {
+export interface EquippableButtonProps {
 	equippable: Equippable;
 	equippableName: string;
 	quantity?: number;
@@ -36,8 +36,8 @@ const TWEEN_OPTIONS: Ripple.TweenOptions = {
 // TODO: change with custom binds
 const SLOT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="];
 
-export function EquippableButton(props: Props) {
-	const controllers = useContext(controllerContext);
+export function EquippableButton(props: EquippableButtonProps) {
+	const controllers = useContext(controllersContext);
 
 	const [isEquipped, setIsEquipped] = useState(false);
 
@@ -89,6 +89,7 @@ export function EquippableButton(props: Props) {
 						setIsEquipped(true);
 					}
 				},
+				MouseButton1Up: () => {},
 			}}
 		>
 			<imagelabel

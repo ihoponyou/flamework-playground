@@ -1,12 +1,14 @@
 import { Networking } from "@flamework/networking";
 import { BroadcastAction } from "@rbxts/reflex";
 import { SharedState } from "./store";
+import { EquippableId } from "./types/equippable";
 
 interface ClientToServerEvents {
 	reflex: {
 		start(): void;
 	};
 	equip(equippable: Instance, shouldEquip: boolean): void;
+	moveEquippableInInventory(equippable: EquippableId, hotbarSlot?: number): void;
 }
 
 interface ServerToClientEvents {
