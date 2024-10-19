@@ -30,13 +30,14 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 			.expect();
 
 		const currentInventory = store.getState(selectPlayerInventory(this.player.instance));
-		this.updateInventoryFromState(currentInventory);
-		this.unsubscribeFromInventory = store.subscribe(selectPlayerInventory(this.player.instance), (state) =>
-			this.updateInventoryFromState(state),
+		this.updateInventoryFromState(currentInventory, false);
+		this.unsubscribeFromInventory = store.subscribe(
+			selectPlayerInventory(this.player.instance),
+			(state, _prevState) => this.updateInventoryFromState(state),
 		);
 
 		const currentSkills = store.getState(selectPlayerSkills(this.player.instance));
-		this.updateSkillsFromState(currentSkills);
+		this.updateSkillsFromState(currentSkills, undefined, false);
 		this.unsubscribeFromSkills = store.subscribe(selectPlayerSkills(this.player.instance), (state, prevState) =>
 			this.updateSkillsFromState(state, prevState),
 		);
@@ -44,6 +45,9 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 		// TODO: this fires twice?
 		Events.addToHotbar.connect((player, id, slot) => {
 			store.addToHotbar(player, id, slot);
+		});
+		Events.removeFromHotbar.connect((player, id) => {
+			store.removeFromHotbar(player, id);
 		});
 	}
 
@@ -54,7 +58,7 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 		super.destroy();
 	}
 
-	private updateInventoryFromState(items?: ReadonlyMap<ItemId, number>) {
+	private updateInventoryFromState(items?: ReadonlyMap<ItemId, number>, autoHotbar = false) {
 		if (items === undefined) return;
 		for (const [itemId, quantity] of items) {
 			const existingItem = this.character.getItem(itemId);
@@ -66,16 +70,24 @@ export class PlayerCharacter extends BaseComponent<{}, Model> implements OnStart
 			}
 
 			this.character.giveItem(itemId, quantity);
-			store.addToHotbar(this.player.instance, itemId);
+			if (autoHotbar) {
+				store.addToHotbar(this.player.instance, itemId);
+			}
 		}
 	}
 
-	private updateSkillsFromState(skills?: ReadonlySet<SkillId>, prevSkills?: ReadonlySet<SkillId>) {
+	private updateSkillsFromState(
+		skills?: ReadonlySet<SkillId>,
+		prevSkills?: ReadonlySet<SkillId>,
+		autoHotbar = false,
+	) {
 		if (skills === undefined) return;
 		for (const skillId of skills) {
 			if (prevSkills && prevSkills.has(skillId)) continue;
 			this.character.learnSkill(skillId);
-			store.addToHotbar(this.player.instance, skillId);
+			if (autoHotbar) {
+				store.addToHotbar(this.player.instance, skillId);
+			}
 		}
 	}
 }
