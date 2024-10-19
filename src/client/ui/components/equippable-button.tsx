@@ -1,8 +1,9 @@
 import { useMotion } from "@rbxts/pretty-react-hooks";
 import React, { Binding, useContext, useEffect, useState } from "@rbxts/react";
 import { GuiService } from "@rbxts/services";
+import { SLOT_LABELS } from "client/constants";
 import { Equippable } from "shared/types/equippable";
-import { controllersContext } from "../context/controllers";
+import { singletonContext } from "../context/controllers";
 
 export interface EquippableButtonProps {
 	equippable: Equippable;
@@ -37,18 +38,15 @@ const TWEEN_OPTIONS: Ripple.TweenOptions = {
 	time: 0.1,
 };
 
-// TODO: change with custom binds
-const SLOT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="];
-
 function calculateMouseScreenPos(mousePosWithInset: Vector2): Vector2 {
 	const inset = GuiService.GetGuiInset()[0];
 	return mousePosWithInset.sub(inset);
 }
 
 export function EquippableButton(props: EquippableButtonProps) {
-	const controllers = useContext(controllersContext);
+	const controllers = useContext(singletonContext);
 
-	const [isEquipped, setIsEquipped] = useState(false);
+	const [isEquipped, setIsEquipped] = useState(props.equippable.isEquipped());
 	useEffect(() => {
 		const conn = props.equippable.onEquipChanged(setIsEquipped);
 		return () => conn.Disconnect();
@@ -168,7 +166,7 @@ export function EquippableButton(props: EquippableButtonProps) {
 				}
 				Position={new UDim2(0.5, 0, 1, 0)}
 				Size={new UDim2(0, 20, 0, 12)}
-				Text={`x${props.quantity}`}
+				Text={`x${tostring(props.quantity)}`}
 				TextColor3={Color3.fromRGB(47, 44, 38)}
 				TextSize={14}
 				TextYAlignment={Enum.TextYAlignment.Bottom}

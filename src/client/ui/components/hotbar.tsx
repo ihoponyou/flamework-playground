@@ -44,6 +44,7 @@ export function Hotbar(props: PropsWithChildren) {
 				{props.children}
 			</frame>
 			<frame
+				key={"EmptyHotbarSlots"}
 				AnchorPoint={new Vector2(0.5, 1)}
 				BackgroundTransparency={1}
 				Position={new UDim2(0.5, 0, 1, -10)}

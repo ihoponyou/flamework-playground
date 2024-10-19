@@ -9,12 +9,12 @@ import { appRefContext } from "client/ui/context/app-ref";
 import { selectHotbar } from "shared/store/slices/hotbar/selectors";
 import { EquippableId } from "shared/types/equippable";
 import { ItemId } from "shared/types/item-id";
-import { controllersContext } from "../context/controllers";
+import { singletonContext } from "../context/controllers";
 import { EquippableButton, EquippableButtonProps } from "./equippable-button";
 
 export function DraggableEquippableButton(props: EquippableButtonProps) {
 	const appRef = useContext(appRefContext);
-	const controllers = useContext(controllersContext);
+	const controllers = useContext(singletonContext);
 
 	const hotbar = useSelector(selectHotbar());
 	const inHotbar = hotbar.includes(props.equippableName as ItemId);
@@ -48,7 +48,6 @@ export function DraggableEquippableButton(props: EquippableButtonProps) {
 							transferredFromBackpack = inHotbar;
 							Events.removeFromHotbar(props.equippableName as EquippableId);
 						} else {
-							print("a");
 							transferredFromBackpack = !inHotbar || emptySlot.LayoutOrder !== props.slot;
 							Events.addToHotbar(props.equippableName as EquippableId, emptySlot.LayoutOrder);
 						}
