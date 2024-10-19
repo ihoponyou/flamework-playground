@@ -9,7 +9,7 @@ import { appRefContext } from "client/ui/context/app-ref";
 import { selectHotbar } from "shared/store/slices/hotbar/selectors";
 import { EquippableId } from "shared/types/equippable";
 import { ItemId } from "shared/types/item-id";
-import { singletonContext } from "../context/controllers";
+import { singletonContext } from "../context/singleton";
 import { EquippableButton, EquippableButtonProps } from "./equippable-button";
 
 export function DraggableEquippableButton(props: EquippableButtonProps) {
