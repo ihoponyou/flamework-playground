@@ -52,26 +52,26 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		return item;
 	}
 
-	learnSkill(id: SkillId): void {
-		SkillServer.instantiate(id, this.skills);
-	}
-
-	giveItem(id: ItemId, quantity: number = 1): void {
-		ItemServer.instantiate(id, quantity, this.inventory).andThen((item) => {
-			// holster
-			item.unequip(this);
-
-			if (!item.instance.HasTag(Weapon.TAG)) return;
-			this.components.waitForComponent<Weapon>(item.instance).andThen((weapon) => this.cacheWeapon(weapon));
-		});
-	}
-
 	getHiltBone(): Part {
 		return this.hiltBone;
 	}
 
 	getWeaponOfType(weaponType: WeaponType): Weapon | undefined {
 		return this.weapons[weaponType];
+	}
+
+	learnSkill(id: SkillId): void {
+		SkillServer.instantiate(id, this.skills, this);
+	}
+
+	giveItem(id: ItemId, quantity: number = 1): void {
+		ItemServer.instantiate(id, quantity, this.inventory, this).andThen((item) => {
+			// holster
+			item.unequip(this);
+
+			if (!item.instance.HasTag(Weapon.TAG)) return;
+			this.components.waitForComponent<Weapon>(item.instance).andThen((weapon) => this.cacheWeapon(weapon));
+		});
 	}
 
 	private newFolder(name: string): Folder {

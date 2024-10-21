@@ -4,6 +4,7 @@ import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
 import { Events } from "server/network";
+import { IOwnable } from "server/types/ownable";
 import { AbstractItem } from "shared/components/abstract-item";
 import { UsefulModel } from "shared/components/useful-model";
 import { ItemId } from "shared/types/item-id";
@@ -17,7 +18,7 @@ import { Ownable } from "./ownable";
 		isEquipped: false,
 	},
 })
-export class ItemServer extends AbstractItem {
+export class ItemServer extends AbstractItem implements IOwnable {
 	static async instantiate(
 		id: ItemId,
 		quantity: number = 1,
@@ -77,6 +78,9 @@ export class ItemServer extends AbstractItem {
 			if (characterInstance === undefined) return;
 			const character = this.components.getComponent<CharacterServer>(characterInstance);
 			if (character === undefined) return;
+			if (!this.isOwnedBy(character))
+				error(`${characterInstance.Name} tried to equip ${instance} but does not own`);
+
 			if (shouldEquip) {
 				this.equip(character);
 			} else {
@@ -96,13 +100,21 @@ export class ItemServer extends AbstractItem {
 		this.attributes.isEquipped = false;
 	}
 
+	getOwner(): CharacterServer | undefined {
+		return this.ownable.getOwner();
+	}
+
 	setOwner(character?: CharacterServer): void {
 		this.ownable.setOwner(character);
 	}
 
-	// isOwnedBy(character?: CharacterServer): boolean {
-	// 	return this.ownable.isOwnedBy(character);
-	// }
+	hasOwner(): boolean {
+		return this.ownable.hasOwner();
+	}
+
+	isOwnedBy(character: CharacterServer): boolean {
+		return this.ownable.isOwnedBy(character);
+	}
 
 	private weldTo(part: BasePart, offset?: CFrame): void {
 		this.bodyAttach.Part0 = part;

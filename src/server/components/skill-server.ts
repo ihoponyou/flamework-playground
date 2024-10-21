@@ -2,10 +2,11 @@ import { Component, Components } from "@flamework/components";
 import { Modding, OnStart } from "@flamework/core";
 import { SKILLS } from "server/configs/skills";
 import { Events } from "server/network";
+import { IOwnable } from "server/types/ownable";
 import { AbstractSkill } from "shared/components/abstract-skill";
 import { SkillId } from "shared/types/skill-id";
 import { CharacterServer } from "./character-server";
-import { OwnableServer } from "./ownable-server";
+import { Ownable } from "./ownable";
 import { Weapon } from "./weapon";
 
 @Component({
@@ -14,12 +15,12 @@ import { Weapon } from "./weapon";
 		isEquipped: false,
 	},
 })
-export class SkillServer extends AbstractSkill implements OnStart {
-	static async instantiate(name: SkillId, parent?: Instance, owner?: Player): Promise<SkillServer> {
+export class SkillServer extends AbstractSkill implements OnStart, IOwnable {
+	static async instantiate(name: SkillId, parent?: Instance, owner?: CharacterServer): Promise<SkillServer> {
 		const skillInstance = new Instance("Tool");
 		skillInstance.Parent = script;
 
-		skillInstance.AddTag(OwnableServer.TAG);
+		skillInstance.AddTag(Ownable.TAG);
 		skillInstance.AddTag(this.TAG);
 		skillInstance.Name = name;
 
@@ -27,7 +28,7 @@ export class SkillServer extends AbstractSkill implements OnStart {
 			.waitForComponent<SkillServer>(skillInstance)
 			.andThen((newSkill) => {
 				skillInstance.Parent = parent ?? script;
-				newSkill.getOwnable().setOwner(owner);
+				newSkill.setOwner(owner);
 				return newSkill;
 			});
 	}
@@ -36,7 +37,7 @@ export class SkillServer extends AbstractSkill implements OnStart {
 
 	private equippedWeapon?: Weapon;
 
-	constructor(private components: Components, protected ownable: OwnableServer) {
+	constructor(private components: Components, protected ownable: Ownable) {
 		super();
 	}
 
@@ -48,9 +49,12 @@ export class SkillServer extends AbstractSkill implements OnStart {
 		Events.equip.connect((player, instance, shouldEquip) => {
 			if (instance !== this.instance) return;
 			const characterInstance = player.Character;
-			if (characterInstance === undefined) return;
+			if (characterInstance === undefined) error(`undefined character instance`);
 			const character = this.components.getComponent<CharacterServer>(characterInstance);
-			if (character === undefined) return;
+			if (character === undefined) error(`undefined character component`);
+			if (!this.isOwnedBy(character))
+				error(`${characterInstance.Name} tried to use ${instance} but does not own`);
+
 			if (shouldEquip) {
 				this.equip(character);
 			} else {
@@ -59,12 +63,15 @@ export class SkillServer extends AbstractSkill implements OnStart {
 		});
 
 		Events.use.connect((player, instance) => {
-			if (instance !== instance) return;
-			// if (!this.ownable.isOwnedBy(player)) return;
+			if (instance !== this.instance) return;
 			const characterInstance = player.Character;
-			if (characterInstance === undefined) return;
+			if (characterInstance === undefined) error(`undefined character instance`);
 			const character = this.components.getComponent<CharacterServer>(characterInstance);
-			if (character === undefined) return;
+			if (character === undefined) error(`undefined character component`);
+			if (!this.isOwnedBy(character))
+				error(`${characterInstance.Name} tried to use ${instance} but does not own`);
+
+			if (!this.isEquipped()) return;
 			this.use(character);
 		});
 	}
@@ -87,11 +94,22 @@ export class SkillServer extends AbstractSkill implements OnStart {
 	}
 
 	override use(user: CharacterServer): void {
-		if (!this.isEquipped()) return;
-		print("BOOM!", this.instance.Name);
+		print("BOOM!", this.instance.Name, user.instance.Name);
 	}
 
-	getOwnable(): OwnableServer {
-		return this.ownable;
+	getOwner(): CharacterServer | undefined {
+		return this.ownable.getOwner();
+	}
+
+	setOwner(character?: CharacterServer): void {
+		this.ownable.setOwner(character);
+	}
+
+	hasOwner(): boolean {
+		return this.ownable.hasOwner();
+	}
+
+	isOwnedBy(character: CharacterServer): boolean {
+		return this.ownable.isOwnedBy(character);
 	}
 }

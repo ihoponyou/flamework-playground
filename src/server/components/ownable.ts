@@ -1,23 +1,28 @@
 import { BaseComponent, Component } from "@flamework/components";
+import { IOwnable } from "server/types/ownable";
 import { CharacterServer } from "./character-server";
 
 @Component({
 	tag: Ownable.TAG,
 })
-export class Ownable extends BaseComponent {
+export class Ownable extends BaseComponent implements IOwnable {
 	static readonly TAG = "Ownable";
 
 	private owner?: CharacterServer;
-
-	setOwner(owner?: CharacterServer) {
-		this.owner = owner;
-	}
 
 	getOwner(): CharacterServer | undefined {
 		return this.owner;
 	}
 
-	isOwnedBy(character?: CharacterServer): boolean {
+	setOwner(owner?: CharacterServer) {
+		this.owner = owner;
+	}
+
+	hasOwner(): boolean {
+		return this.owner !== undefined;
+	}
+
+	isOwnedBy(character: CharacterServer): boolean {
 		return this.owner === character;
 	}
 }
