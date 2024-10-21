@@ -5,6 +5,7 @@ import { Events } from "server/network";
 import { AbstractSkill } from "shared/components/abstract-skill";
 import { SkillId } from "shared/types/skill-id";
 import { CharacterServer } from "./character-server";
+import { OwnableServer } from "./ownable-server";
 import { Weapon } from "./weapon";
 
 @Component({
@@ -14,18 +15,20 @@ import { Weapon } from "./weapon";
 	},
 })
 export class SkillServer extends AbstractSkill implements OnStart {
-	static async instantiateSkill(name: SkillId, parent?: Instance): Promise<SkillServer> {
-		const newItem = new Instance("Tool");
-		newItem.Parent = script;
+	static async instantiate(name: SkillId, parent?: Instance, owner?: Player): Promise<SkillServer> {
+		const skillInstance = new Instance("Tool");
+		skillInstance.Parent = script;
 
-		newItem.AddTag(this.TAG);
-		newItem.Name = name;
+		skillInstance.AddTag(OwnableServer.TAG);
+		skillInstance.AddTag(this.TAG);
+		skillInstance.Name = name;
 
 		return Modding.resolveSingleton(Components)
-			.waitForComponent<SkillServer>(newItem)
-			.andThen((item) => {
-				newItem.Parent = parent ?? script;
-				return item;
+			.waitForComponent<SkillServer>(skillInstance)
+			.andThen((newSkill) => {
+				skillInstance.Parent = parent ?? script;
+				newSkill.getOwnable().setOwner(owner);
+				return newSkill;
 			});
 	}
 
@@ -33,7 +36,7 @@ export class SkillServer extends AbstractSkill implements OnStart {
 
 	private equippedWeapon?: Weapon;
 
-	constructor(private components: Components) {
+	constructor(private components: Components, protected ownable: OwnableServer) {
 		super();
 	}
 
@@ -53,6 +56,16 @@ export class SkillServer extends AbstractSkill implements OnStart {
 			} else {
 				this.unequip(character);
 			}
+		});
+
+		Events.use.connect((player, instance) => {
+			if (instance !== instance) return;
+			// if (!this.ownable.isOwnedBy(player)) return;
+			const characterInstance = player.Character;
+			if (characterInstance === undefined) return;
+			const character = this.components.getComponent<CharacterServer>(characterInstance);
+			if (character === undefined) return;
+			this.use(character);
 		});
 	}
 
@@ -74,6 +87,11 @@ export class SkillServer extends AbstractSkill implements OnStart {
 	}
 
 	override use(user: CharacterServer): void {
+		if (!this.isEquipped()) return;
 		print("BOOM!", this.instance.Name);
+	}
+
+	getOwnable(): OwnableServer {
+		return this.ownable;
 	}
 }

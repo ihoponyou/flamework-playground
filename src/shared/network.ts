@@ -8,6 +8,7 @@ interface ClientToServerEvents {
 		start(): void;
 	};
 	equip(equippable: Instance, shouldEquip: boolean): void;
+	use(useable: Instance): void;
 	addToHotbar(equippableId: EquippableId, hotbarSlot: number): void;
 	removeFromHotbar(equippableId: EquippableId): void;
 }

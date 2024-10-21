@@ -18,7 +18,12 @@ import { Ownable } from "./ownable";
 	},
 })
 export class ItemServer extends AbstractItem {
-	static async instantiateItem(id: ItemId, quantity: number = 1, parent?: Instance): Promise<ItemServer> {
+	static async instantiate(
+		id: ItemId,
+		quantity: number = 1,
+		parent?: Instance,
+		owner?: CharacterServer,
+	): Promise<ItemServer> {
 		const newItem = new Instance("Model");
 		newItem.Parent = script;
 
@@ -36,6 +41,7 @@ export class ItemServer extends AbstractItem {
 			.andThen((item) => {
 				newItem.Parent = parent ?? script;
 				item.attributes.quantity = quantity;
+				item.setOwner(owner);
 				return item;
 			});
 	}
@@ -89,6 +95,14 @@ export class ItemServer extends AbstractItem {
 		this.weldTo(rig[this.config.holsterPart], this.config.holsterC0);
 		this.attributes.isEquipped = false;
 	}
+
+	setOwner(character?: CharacterServer): void {
+		this.ownable.setOwner(character);
+	}
+
+	// isOwnedBy(character?: CharacterServer): boolean {
+	// 	return this.ownable.isOwnedBy(character);
+	// }
 
 	private weldTo(part: BasePart, offset?: CFrame): void {
 		this.bodyAttach.Part0 = part;

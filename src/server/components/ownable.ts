@@ -9,19 +9,15 @@ export class Ownable extends BaseComponent {
 
 	private owner?: CharacterServer;
 
-	public getOwner(): CharacterServer | undefined {
+	setOwner(owner?: CharacterServer) {
+		this.owner = owner;
+	}
+
+	getOwner(): CharacterServer | undefined {
 		return this.owner;
 	}
 
-	public setOwner(character: CharacterServer): void {
-		this.owner = character;
-	}
-
-	public hasOwner(): boolean {
-		return this.owner !== undefined;
-	}
-
-	public isOwnedBy(character: CharacterServer): boolean {
+	isOwnedBy(character?: CharacterServer): boolean {
 		return this.owner === character;
 	}
 }

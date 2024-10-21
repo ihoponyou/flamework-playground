@@ -35,9 +35,9 @@ export class CharacterClient extends AbstractCharacter implements OnStart {
 		});
 	}
 
+	// waitForComponent<Equippable>() does not work
 	private retrieveEquippable<T extends Equippable>(instance: Instance, componentSpecifier: ConstructorRef<T>) {
 		const equippable = this.components.waitForComponent(instance, componentSpecifier).expect();
-		print(`got Equippable @ ${instance.Name}`);
 		store.addEquippable(instance.Name, equippable);
 	}
 }

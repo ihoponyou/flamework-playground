@@ -11,11 +11,12 @@ export abstract class AbstractSkill extends BaseComponent<SkillAttributes> imple
 
 	abstract equip(equipper: AbstractCharacter): void;
 	abstract unequip(unequipper: AbstractCharacter): void;
+
+	abstract use(user: AbstractCharacter): void;
+
 	onEquipChanged(callback: (isEquipped: boolean) => void): RBXScriptConnection {
 		return this.onAttributeChanged("isEquipped", (newValue) => callback(newValue));
 	}
-
-	abstract use(user: AbstractCharacter): void;
 
 	isEquipped(): boolean {
 		return this.attributes.isEquipped;
