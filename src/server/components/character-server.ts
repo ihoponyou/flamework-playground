@@ -1,6 +1,7 @@
 import { Component, Components } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { AbstractCharacter } from "shared/components/abstract-character";
+import { Equippable } from "shared/modules/equippable";
 import { ItemId } from "shared/modules/item-id";
 import { SkillId } from "shared/modules/skill-id";
 import { WeaponType } from "shared/modules/weapon-type";
@@ -23,6 +24,8 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		[WeaponType.SPEAR]: undefined,
 		[WeaponType.SWORD]: undefined,
 	};
+
+	private currentlyEquipped?: Equippable;
 
 	constructor(protected components: Components) {
 		super();
@@ -74,6 +77,14 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 		});
 	}
 
+	getCurrentEquipped(): Equippable | undefined {
+		return this.currentlyEquipped;
+	}
+
+	setCurrentEquipped(equippable?: Equippable): void {
+		this.currentlyEquipped = equippable;
+	}
+
 	private newFolder(name: string): Folder {
 		const inventory = new Instance("Folder");
 		inventory.Name = name;
@@ -100,9 +111,12 @@ export class CharacterServer extends AbstractCharacter implements OnStart {
 
 	// what if the character drops the highest tier weapon
 	private cacheWeapon(weapon: Weapon) {
-		const weaponType = weapon.getType();
+		const weaponType = weapon.config.type;
 		const currentWeaponOfType = this.weapons[weaponType];
-		if (currentWeaponOfType === undefined || currentWeaponOfType.getEquipPriority() < weapon.getEquipPriority()) {
+		if (
+			currentWeaponOfType === undefined ||
+			currentWeaponOfType.config.equipPriority < weapon.config.equipPriority
+		) {
 			this.weapons[weaponType] = weapon;
 		}
 	}

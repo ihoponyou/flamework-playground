@@ -76,30 +76,26 @@ export class SkillServer extends AbstractSkill implements OnStart, IOwnable {
 		});
 	}
 
-	override equip(equipper: CharacterServer): void {
+	equip(equipper: CharacterServer): void {
+		equipper.getCurrentEquipped()?.unequip(equipper);
 		if (this.config.requiredWeaponType !== undefined) {
 			const requiredWeapon = equipper.getWeaponOfType(this.config.requiredWeaponType);
 			if (requiredWeapon === undefined) return;
-			requiredWeapon.equip(equipper);
+			requiredWeapon.rigTo(equipper, true);
 			this.equippedWeapon = requiredWeapon;
 		}
-
+		equipper.setCurrentEquipped(this);
 		this.attributes.isEquipped = true;
 	}
 
-	override unequip(unequipper: CharacterServer): void {
-		this.equippedWeapon?.unequip(unequipper);
-
+	unequip(unequipper: CharacterServer): void {
+		this.equippedWeapon?.rigTo(unequipper, false);
+		unequipper.setCurrentEquipped(undefined);
 		this.attributes.isEquipped = false;
 	}
 
-	override use(user: CharacterServer): void {
-		print("BOOM!", this.instance.Name, user.instance.Name);
-
-		if (this.config.params.animation !== undefined) {
-			// connect animation finished effects
-			// connect animation marker reached effects
-		}
+	use(user: CharacterServer): void {
+		this.config.activate(user);
 	}
 
 	getOwner(): CharacterServer | undefined {

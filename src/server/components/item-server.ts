@@ -90,13 +90,15 @@ export class ItemServer extends AbstractItem implements IOwnable {
 	}
 
 	equip(equipper: CharacterServer): void {
-		this.weldTo(equipper.getHiltBone(), this.config.equipC0);
+		equipper.getCurrentEquipped()?.unequip(equipper);
+		this.rigTo(equipper, true);
+		equipper.setCurrentEquipped(this);
 		this.attributes.isEquipped = true;
 	}
 
 	unequip(unequipper: CharacterServer): void {
-		const rig = promiseR6(unequipper.instance).expect();
-		this.weldTo(rig[this.config.holsterPart], this.config.holsterC0);
+		this.rigTo(unequipper, false);
+		unequipper.setCurrentEquipped(undefined);
 		this.attributes.isEquipped = false;
 	}
 
@@ -114,6 +116,15 @@ export class ItemServer extends AbstractItem implements IOwnable {
 
 	isOwnedBy(character: CharacterServer): boolean {
 		return this.ownable.isOwnedBy(character);
+	}
+
+	rigTo(character: CharacterServer, equipped: boolean) {
+		if (equipped) {
+			this.weldTo(character.getHiltBone(), this.config.equipC0);
+		} else {
+			const rig = promiseR6(character.instance).expect();
+			this.weldTo(rig[this.config.holsterPart], this.config.holsterC0);
+		}
 	}
 
 	private weldTo(part: BasePart, offset?: CFrame): void {

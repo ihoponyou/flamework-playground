@@ -1,3 +1,4 @@
+import { CharacterServer } from "server/components/character-server";
 import { ClassId } from "shared/configs/classes";
 import { SkillId } from "shared/modules/skill-id";
 import { WeaponType } from "shared/modules/weapon-type";
@@ -7,7 +8,7 @@ export interface SkillConfig {
 	readonly weaponXpRequired: Record<WeaponType, number>;
 	readonly requiredClasses: ReadonlyArray<ClassId>;
 	readonly requiredWeaponType: WeaponType | undefined;
-	readonly params: AbilityParams;
+	readonly activate: (user: CharacterServer) => void;
 }
 
 export enum TargetingStyle {
@@ -98,21 +99,8 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 		},
 		requiredClasses: [],
 		requiredWeaponType: undefined,
-		params: {
-			animation: new Instance("Animation"),
-			manaCost: 0,
-			cooldown: 1,
-			targeting: {
-				style: TargetingStyle.ToCursor,
-				ignoredCollisionGroups: [],
-			},
-			triggeredEffects: [
-				{
-					targetedGroups: [TargetGroup.Friend, TargetGroup.Foe],
-					triggeredBy: EffectTrigger.OnHit,
-					effectsToApply: [new DamageEffect(10), new RagdollEffect(1)],
-				},
-			],
+		activate: (user) => {
+			print("threw a goblet");
 		},
 	},
 	"Pommel Strike": {
@@ -125,25 +113,8 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 		},
 		requiredClasses: [ClassId.WARRIOR],
 		requiredWeaponType: WeaponType.SWORD,
-		params: {
-			animation: new Instance("Animation"),
-			manaCost: 0,
-			cooldown: 15,
-			targeting: {
-				style: TargetingStyle.Hitbox,
-				ignoredCollisionGroups: [],
-			},
-			triggeredEffects: [
-				{
-					targetedGroups: [TargetGroup.Friend, TargetGroup.Foe],
-					triggeredBy: EffectTrigger.OnHit,
-					effectsToApply: [
-						new DamageEffect(10),
-						new RagdollEffect(1),
-						new KnockbackEffect(10, true, KnockbackDirection.CasterLookVector),
-					],
-				},
-			],
+		activate: (user) => {
+			print("struck a pommel");
 		},
 	},
 };
