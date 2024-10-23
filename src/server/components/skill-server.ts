@@ -95,6 +95,12 @@ export class SkillServer extends AbstractSkill implements OnStart, IOwnable {
 
 	override use(user: CharacterServer): void {
 		print("BOOM!", this.instance.Name, user.instance.Name);
+		// activate immediate effects
+		const animation = undefined;
+		if (animation !== undefined) {
+			// connect animation finished effects
+			// connect animation marker reached effects
+		}
 	}
 
 	getOwner(): CharacterServer | undefined {
