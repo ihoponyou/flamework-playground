@@ -1,6 +1,6 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
-import { Equippable } from "shared/types/equippable";
+import { Equippable } from "shared/modules/equippable";
 
 export const equippablesSlice = createProducer(new Map() as ReadonlyMap<string, Equippable>, {
 	addEquippable: (state, instanceName: string, equippable: Equippable) => {

@@ -1,5 +1,5 @@
-import { ItemId } from "shared/types/item-id";
-import { R6BodyPart } from "shared/types/r6-body-part";
+import { ItemId } from "shared/modules/item-id";
+import { R6BodyPart } from "shared/modules/r6-body-part";
 
 export interface ItemConfig {
 	readonly maxQuantity: number;

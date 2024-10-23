@@ -2,8 +2,8 @@ import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { UsefulModel } from "shared/components/useful-model";
 import { ITEMS } from "shared/configs/items";
-import { Equippable, EquippableAttributes } from "shared/types/equippable";
-import { ItemId } from "shared/types/item-id";
+import { Equippable, EquippableAttributes } from "shared/modules/equippable";
+import { ItemId } from "shared/modules/item-id";
 import { AbstractCharacter } from "./abstract-character";
 
 interface ItemAttributes extends EquippableAttributes {

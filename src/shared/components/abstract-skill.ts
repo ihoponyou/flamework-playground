@@ -1,6 +1,6 @@
 import { BaseComponent, Component } from "@flamework/components";
-import { Equippable, EquippableAttributes } from "shared/types/equippable";
-import { Useable } from "shared/types/useable";
+import { Equippable, EquippableAttributes } from "shared/modules/equippable";
+import { Useable } from "shared/modules/useable";
 import { AbstractCharacter } from "./abstract-character";
 
 interface SkillAttributes extends EquippableAttributes {}

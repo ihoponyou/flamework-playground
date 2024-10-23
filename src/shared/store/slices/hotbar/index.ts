@@ -1,9 +1,9 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
 import { Array } from "@rbxts/sift";
-import { MAX_HOTBAR_SLOTS } from "shared/constants";
+import { MAX_HOTBAR_SLOTS } from "shared/configs/constants";
+import { EquippableId } from "shared/modules/equippable";
 import { PlayerProfileData } from "shared/store/player-data";
-import { EquippableId } from "shared/types/equippable";
 
 const EMPTY_VALUE = "";
 

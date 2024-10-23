@@ -3,12 +3,12 @@ import { useBinding, useContext, useState } from "@rbxts/react";
 import { useSelector } from "@rbxts/react-reflex";
 import { createPortal } from "@rbxts/react-roblox";
 import { GuiService, RunService, UserInputService } from "@rbxts/services";
-import { LOCAL_PLAYER_GUI } from "client/constants";
+import { LOCAL_PLAYER_GUI } from "client/configs/constants";
 import { Events } from "client/network";
 import { appRefContext } from "client/ui/context/app-ref";
+import { EquippableId } from "shared/modules/equippable";
+import { ItemId } from "shared/modules/item-id";
 import { selectHotbar } from "shared/store/slices/hotbar/selectors";
-import { EquippableId } from "shared/types/equippable";
-import { ItemId } from "shared/types/item-id";
 import { singletonContext } from "../context/singleton";
 import { EquippableButton, EquippableButtonProps } from "./equippable-button";
 

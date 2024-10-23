@@ -4,7 +4,7 @@ import React, { StrictMode } from "@rbxts/react";
 import { ReflexProvider } from "@rbxts/react-reflex";
 import { createPortal, createRoot } from "@rbxts/react-roblox";
 import { ContextActionService, StarterGui } from "@rbxts/services";
-import { LOCAL_PLAYER_GUI } from "client/constants";
+import { LOCAL_PLAYER_GUI } from "client/configs/constants";
 import { store } from "client/store";
 import { selectIsBackpackOpen } from "client/store/slices/ui/selectors";
 import { App } from "client/ui/components/app";

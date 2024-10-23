@@ -1,10 +1,10 @@
 import { Component, Components } from "@flamework/components";
 import { Modding, OnStart } from "@flamework/core";
 import { SKILLS } from "server/configs/skills";
+import { IOwnable } from "server/modules/ownable";
 import { Events } from "server/network";
-import { IOwnable } from "server/types/ownable";
 import { AbstractSkill } from "shared/components/abstract-skill";
-import { SkillId } from "shared/types/skill-id";
+import { SkillId } from "shared/modules/skill-id";
 import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 import { Weapon } from "./weapon";
@@ -95,9 +95,8 @@ export class SkillServer extends AbstractSkill implements OnStart, IOwnable {
 
 	override use(user: CharacterServer): void {
 		print("BOOM!", this.instance.Name, user.instance.Name);
-		// activate immediate effects
-		const animation = undefined;
-		if (animation !== undefined) {
+
+		if (this.config.params.animation !== undefined) {
 			// connect animation finished effects
 			// connect animation marker reached effects
 		}

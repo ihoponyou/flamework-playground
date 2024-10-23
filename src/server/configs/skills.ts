@@ -1,59 +1,91 @@
 import { ClassId } from "shared/configs/classes";
-import { SkillId } from "shared/types/skill-id";
-import { WeaponType } from "shared/types/weapon-type";
+import { SkillId } from "shared/modules/skill-id";
+import { WeaponType } from "shared/modules/weapon-type";
 
 export interface SkillConfig {
 	readonly cooldown: number;
 	readonly weaponXpRequired: Record<WeaponType, number>;
 	readonly requiredClasses: ReadonlyArray<ClassId>;
 	readonly requiredWeaponType: WeaponType | undefined;
+	readonly params: AbilityParams;
 }
 
-enum EffectAction {
-	Teleport,
-	Animate,
-	Ragdoll,
-	ApplyStatus,
+export enum TargetingStyle {
+	ToCursor,
+	Hitbox,
 }
 
-enum EffectActionActivationType {
-	OnAnimationFinished = "ON_ANIM_FINISHED",
-	OnAnimationMarkerReached = "ON_ANIM_MARKER_REACHED",
-	OnUse = "ON_USE",
-	OnCancel = "ON_CANCEL",
+export enum TargetGroup {
+	Friend,
+	Foe,
 }
 
-enum EffectDurationType {
+export enum EffectTrigger {
 	Immediate,
-	ContinuousOverTime, // poison ticking
-	DiscreteOverTime, // burn ticks
+	OnHit,
+	OnAnimationMarkerReached,
 }
 
-enum SkillRestriction {
-	Cooldown,
-	Weapon,
+enum Effect {
+	Damage,
+	Knockback,
+	Ragdoll,
+	Stun,
 }
 
-interface Effect {
-	action: EffectAction;
-	durationType: EffectDurationType;
+abstract class AbstractEffect {}
+
+class DamageEffect extends AbstractEffect {
+	constructor(public readonly amount: number) {
+		super();
+	}
 }
 
-export interface ActiveSkillConfig {
-	readonly effects: Record<EffectActionActivationType, ReadonlyArray<Effect>>;
-	readonly restrictions: ReadonlyArray<SkillRestriction>;
-	readonly animation?: Animation;
+export enum KnockbackDirection {
+	CasterToTarget,
+	CasterLookVector,
 }
 
-const POMMEL_STRIKE: ActiveSkillConfig = {
-	effects: {
-		ON_ANIM_FINISHED: [],
-		ON_ANIM_MARKER_REACHED: [],
-		ON_CANCEL: [],
-		ON_USE: [],
-	},
-	restrictions: [],
-};
+class KnockbackEffect extends AbstractEffect {
+	constructor(
+		public readonly magnitude: number,
+		public readonly ignoreGravity: boolean,
+		public readonly direction: KnockbackDirection,
+	) {
+		super();
+	}
+}
+
+interface Duration {
+	readonly duration: number;
+}
+
+class RagdollEffect extends AbstractEffect implements Duration {
+	constructor(public readonly duration: number) {
+		super();
+	}
+}
+
+class StunEffect extends AbstractEffect implements Duration {
+	constructor(public readonly duration: number) {
+		super();
+	}
+}
+
+interface AbilityParams {
+	animation?: Animation;
+	manaCost: number;
+	cooldown: number;
+	targeting: {
+		style: TargetingStyle;
+		ignoredCollisionGroups: string[];
+	};
+	triggeredEffects: Array<{
+		targetedGroups: TargetGroup[];
+		triggeredBy: EffectTrigger;
+		effectsToApply: AbstractEffect[];
+	}>;
+}
 
 export const SKILLS: Record<SkillId, SkillConfig> = {
 	"Goblet Throw": {
@@ -66,6 +98,22 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 		},
 		requiredClasses: [],
 		requiredWeaponType: undefined,
+		params: {
+			animation: new Instance("Animation"),
+			manaCost: 0,
+			cooldown: 1,
+			targeting: {
+				style: TargetingStyle.ToCursor,
+				ignoredCollisionGroups: [],
+			},
+			triggeredEffects: [
+				{
+					targetedGroups: [TargetGroup.Friend, TargetGroup.Foe],
+					triggeredBy: EffectTrigger.OnHit,
+					effectsToApply: [new DamageEffect(10), new RagdollEffect(1)],
+				},
+			],
+		},
 	},
 	"Pommel Strike": {
 		cooldown: 12,
@@ -77,5 +125,25 @@ export const SKILLS: Record<SkillId, SkillConfig> = {
 		},
 		requiredClasses: [ClassId.WARRIOR],
 		requiredWeaponType: WeaponType.SWORD,
+		params: {
+			animation: new Instance("Animation"),
+			manaCost: 0,
+			cooldown: 15,
+			targeting: {
+				style: TargetingStyle.Hitbox,
+				ignoredCollisionGroups: [],
+			},
+			triggeredEffects: [
+				{
+					targetedGroups: [TargetGroup.Friend, TargetGroup.Foe],
+					triggeredBy: EffectTrigger.OnHit,
+					effectsToApply: [
+						new DamageEffect(10),
+						new RagdollEffect(1),
+						new KnockbackEffect(10, true, KnockbackDirection.CasterLookVector),
+					],
+				},
+			],
+		},
 	},
 };

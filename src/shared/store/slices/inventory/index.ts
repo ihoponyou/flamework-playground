@@ -1,8 +1,8 @@
 import Immut from "@rbxts/immut";
 import { createProducer } from "@rbxts/reflex";
 import { ITEMS } from "shared/configs/items";
+import { ItemId } from "shared/modules/item-id";
 import { PlayerProfileData } from "shared/store/player-data";
-import { ItemId } from "shared/types/item-id";
 
 export type InventoryState = ReadonlyMap<ItemId, number>;
 

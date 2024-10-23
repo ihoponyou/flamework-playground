@@ -1,7 +1,7 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { OnStart } from "@flamework/core";
 import { store } from "server/store";
-import { SkillId } from "shared/types/skill-id";
+import { SkillId } from "shared/modules/skill-id";
 
 @Component({
 	tag: "SkillGiver",

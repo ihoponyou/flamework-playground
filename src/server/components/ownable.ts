@@ -1,5 +1,5 @@
 import { BaseComponent, Component } from "@flamework/components";
-import { IOwnable } from "server/types/ownable";
+import { IOwnable } from "server/modules/ownable";
 import { CharacterServer } from "./character-server";
 
 @Component({

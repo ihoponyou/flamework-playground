@@ -1,7 +1,7 @@
 import { Components } from "@flamework/components";
 import { Controller, OnStart } from "@flamework/core";
 import { CharacterClient } from "client/components/character-client";
-import { LOCAL_PLAYER } from "client/constants";
+import { LOCAL_PLAYER } from "client/configs/constants";
 
 @Controller()
 export class CharacterController implements OnStart {

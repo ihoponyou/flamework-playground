@@ -1,7 +1,7 @@
 import { BaseComponent, Component } from "@flamework/components";
 import { WEAPONS } from "shared/configs/weapons";
-import { Equippable } from "shared/types/equippable";
-import { WeaponType } from "shared/types/weapon-type";
+import { Equippable } from "shared/modules/equippable";
+import { WeaponType } from "shared/modules/weapon-type";
 import { CharacterServer } from "./character-server";
 import { ItemServer } from "./item-server";
 

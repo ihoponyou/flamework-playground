@@ -1,6 +1,6 @@
 import { Weapon } from "server/components/weapon";
 import { ItemConfig, ITEMS } from "shared/configs/items";
-import { ItemId } from "shared/types/item-id";
+import { ItemId } from "shared/modules/item-id";
 
 export interface ItemConfigServer extends ItemConfig {
 	readonly tags: ReadonlyArray<string>;

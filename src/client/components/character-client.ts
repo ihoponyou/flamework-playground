@@ -2,10 +2,10 @@ import { Component, Components } from "@flamework/components";
 import { ConstructorRef } from "@flamework/components/out/utility";
 import { OnStart } from "@flamework/core";
 import { Players } from "@rbxts/services";
-import { LOCAL_PLAYER } from "client/constants";
+import { LOCAL_PLAYER } from "client/configs/constants";
 import { store } from "client/store";
 import { AbstractCharacter } from "shared/components/abstract-character";
-import { Equippable } from "shared/types/equippable";
+import { Equippable } from "shared/modules/equippable";
 import { ItemClient } from "./item-client";
 import { SkillClient } from "./skill-client";
 

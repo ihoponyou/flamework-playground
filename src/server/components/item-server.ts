@@ -3,11 +3,11 @@ import { Modding } from "@flamework/core";
 import { promiseR6 } from "@rbxts/promise-character";
 import { ReplicatedStorage } from "@rbxts/services";
 import { ITEMS_SERVER } from "server/configs/items";
+import { IOwnable } from "server/modules/ownable";
 import { Events } from "server/network";
-import { IOwnable } from "server/types/ownable";
 import { AbstractItem } from "shared/components/abstract-item";
 import { UsefulModel } from "shared/components/useful-model";
-import { ItemId } from "shared/types/item-id";
+import { ItemId } from "shared/modules/item-id";
 import { CharacterServer } from "./character-server";
 import { Ownable } from "./ownable";
 

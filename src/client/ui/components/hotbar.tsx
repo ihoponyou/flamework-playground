@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from "@rbxts/react";
 import { useSelector } from "@rbxts/react-reflex";
 import { selectIsBackpackOpen } from "client/store/slices/ui/selectors";
-import { MAX_HOTBAR_SLOTS } from "shared/constants";
+import { MAX_HOTBAR_SLOTS } from "shared/configs/constants";
 import { selectHotbar } from "shared/store/slices/hotbar/selectors";
 import { EmptySlot } from "./empty-slot";
 

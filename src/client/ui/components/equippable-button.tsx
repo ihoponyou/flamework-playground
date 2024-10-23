@@ -1,8 +1,8 @@
 import { useMotion } from "@rbxts/pretty-react-hooks";
 import React, { Binding, useContext, useEffect, useState } from "@rbxts/react";
 import { GuiService } from "@rbxts/services";
-import { SLOT_LABELS } from "client/constants";
-import { Equippable } from "shared/types/equippable";
+import { SLOT_LABELS } from "client/configs/constants";
+import { Equippable } from "shared/modules/equippable";
 import { singletonContext } from "../context/singleton";
 
 export interface EquippableButtonProps {

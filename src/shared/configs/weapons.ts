@@ -1,4 +1,4 @@
-import { WeaponType } from "shared/types/weapon-type";
+import { WeaponType } from "shared/modules/weapon-type";
 
 interface WeaponConfig {
 	type: WeaponType;

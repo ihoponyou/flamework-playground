@@ -1,7 +1,7 @@
 import { Networking } from "@flamework/networking";
 import { BroadcastAction } from "@rbxts/reflex";
-import { SharedState } from "./store";
-import { EquippableId } from "./types/equippable";
+import { EquippableId } from "shared/modules/equippable";
+import { SharedState } from "shared/store";
 
 interface ClientToServerEvents {
 	reflex: {
