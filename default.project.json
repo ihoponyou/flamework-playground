@@ -1,9 +1,6 @@
 {
 	"name": "flamework-game",
-	"globIgnorePaths": [
-		"**/package.json",
-		"**/tsconfig.json"
-	],
+	"globIgnorePaths": ["**/package.json", "**/tsconfig.json"],
 	"tree": {
 		"$className": "DataModel",
 		"ServerScriptService": {
@@ -51,7 +48,7 @@
 				"HttpEnabled": true
 			}
 		},
-		"SoundService": {
+		"Soundscape": {
 			"$className": "SoundService",
 			"$properties": {
 				"RespectFilteringEnabled": true
