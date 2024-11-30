@@ -1,6 +1,10 @@
 import { Networking } from "@flamework/networking";
 
-interface ClientToServerEvents {}
+interface ClientToServerEvents {
+	lightAttack(): void;
+	heavyAttack(): void;
+	block(blockUp: boolean): void;
+}
 
 interface ServerToClientEvents {}
 
